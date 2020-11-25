@@ -1,0 +1,21 @@
+/* The following line can be included in a src/App.scss */
+@import "~bootstrap/scss/bootstrap";
+
+.product-list{
+  .product-list-header{
+    border-bottom: 1px solid #e1e1e1;
+  }
+  .product-list-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 5fr 4fr 2fr 1fr 1fr 1fr;
+  }
+  .product-item{
+    padding: .5em 0;
+    border-bottom: 1px solid #e1e1e1;
+    align-items: center;
+  }
+}
+
+.badge-custom{
+  border: 1px solid #e1e1e1;
+}
