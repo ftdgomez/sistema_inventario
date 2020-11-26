@@ -23,8 +23,8 @@ const ProductList = ({products}) => {
           <span>{product._id.slice(-4).toString().replace(/,/g, '')}</span>
           <span><a href="#">{product.name}</a></span>
           <span>{product.tags.map(tag => (<Badge className="mr-2 badge-custom">{tag}</Badge>))}</span>
-          <span>$ {product.prices[0].sellPrice.toString().replace('.',',')}</span>
-          <span>{product.prices[0].countInStock}</span>
+          <span>$ 99</span>
+          <span>100</span>
           <Button size='sm' className="mr-2" variant="outline-secondary">Editar</Button>
           <Button size='sm' variant="danger">Borrar</Button>
         </div>
