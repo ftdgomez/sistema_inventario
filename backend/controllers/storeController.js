@@ -41,33 +41,83 @@ export const getOneStore = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Fetch all products
+// @route   GET /api/stores/:id/products
+// @access  Public
+export const getProductsByStore = asyncHandler(async (req, res) => {
+  try {
+    const products = await Product.find({"variants.inStore.store": req.params.storeid })
+    res.json(products)
+  } catch (error) {
+    console.error(error)
+    res.status(404)
+    throw new Error('Not Found')
+  }
+})
+
+
+
+// @desc    Create a store
+// @route   POST /api/store
+// @access  Private/Admin
+
+export const createStore = asyncHandler(async (req, res) => {
+  const store = new Store(req.body)
+  try {
+    const createdStore = await product.save()
+    res.status(201).json(createdStore)
+  } catch (error) {
+    res.status(400)
+    throw new Error('Bad request')
+  }
+})
+
+// @desc    Update a Store
+// @route   PUT /api/store/:id
+// @access  Private/Admin
+
+export const updateProduct = asyncHandler(async (req, res) => {
+  const {
+    name,
+    address,
+    personInCharge,
+    contactPhone,
+    contactMail,
+    hours
+  } = req.body
+
+  const store = await Store.findById(req.params.id)
+
+  if (store)
+  {
+    store.name = name
+    store.address = address
+    store.personInCharge = personInCharge
+    store.contactPhone = contactPhone
+    store.contactMail = contactMail
+    store.hour = hour
+
+    const updatedStore = await store.save()
+    res.json(updatedStore)
+  }
+  else
+  {
+    res.status(404)
+    throw new Error('Store not found')
+  }
+})
 
 // @desc    Delete a store
 // @route   DELETE /api/store/:id
 // @access  Private/Admin
-const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Store.findById(req.params.id)
+export const deleteStore = asyncHandler(async (req, res) => {
+  const store = await Store.findById(req.params.id)
 
-  if (product) {
-    await product.remove()
+  if (store) {
+    await store.remove()
     res.json({ message: 'Store removed' })
   } else {
     res.status(404)
     throw new Error('Store not found')
   }
 })
-
-// @desc    Fetch all products
-// @route   GET /api/stores/:id/products
-// @access  Public
-export const getProductsByStore = asyncHandler(async (req, res) => {
-  try {
-    const products = await Product.find({store: req.params.storeid})
-    res.json(products)
-  } catch (error) {
-    res.status(404)
-    throw new Error('Bad params')
-  }
-})
-
-

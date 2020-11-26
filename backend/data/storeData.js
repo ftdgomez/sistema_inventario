@@ -1,5 +1,6 @@
 const stores = [
   {
+    _id: 'defaultstore',
     name: 'La Casanova',
     address: 'Av. Casanova, Sabana Grande, Caracas (diagonal a El Arabito, frente a Prolicor)',
     personInCharge: 'Pepito Perez',

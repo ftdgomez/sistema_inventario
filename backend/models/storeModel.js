@@ -20,7 +20,7 @@ const storeSchema  = mongoose.Schema({
   contactPhone: {
     type: String,
     required: true,
-    match: [/([0-9])\w+/g] // only numerical values
+    match: [/([0-9])\w+/g, 'Solo valores numericos.'] // only numerical values
   },
   contactMail: {
     type: String,

@@ -13,10 +13,24 @@ const variationSchema = mongoose.Schema({
     type: Number,
     required: true
   },
-  countInStock: {
-    type: Number,
-    required: true
-  }
+  inStore: [
+    {
+    store: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'Store',
+        default: 'defaultstore'
+      },
+    countInStock: {
+        type: Number,
+        required: true
+      },
+    sold: {
+        type: Number,
+        default: 0
+      }
+    }
+  ],
 })
 
 const productSchema  = mongoose.Schema({
@@ -37,21 +51,12 @@ const productSchema  = mongoose.Schema({
     type: String,
     required: false
   },
-  store: [{
-    type: mongoose.Schema.Types.ObjectId,
-    required: false,
-    ref: 'Store',
-  }],
   categories: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: false
   }],
-  prices: [variationSchema],
-  sold: {
-    type: Number,
-    default: 0
-  }
+  variants: [variationSchema],
 }, {
 timestamp: true
 })

@@ -4,7 +4,8 @@ const router = express.Router()
 import {
   getStores,
   getOneStore,
-  getProductsByStore
+  getProductsByStore,
+  deleteStore
 } from '../controllers/storeController.js'
 
 router.route('/')
@@ -15,5 +16,6 @@ router.route('/:storeid/products')
 
 router.route('/:id')
       .get(getOneStore)
+      .delete(deleteStore)
 
 export default router
