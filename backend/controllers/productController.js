@@ -7,7 +7,7 @@ import Product from '../models/productModel.js'
 // @access  Public
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 10
+  const pageSize = 20
   const page = Number(req.query.pageNumber) || 1
   const keyword = req.query.keyword
     ? {
@@ -112,6 +112,6 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/products/top
 // @access  Public
 export const getTopProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).sort({ sold: -1 }).limit(10)
+  const products = await Product.find({}).sort({ "variants.inStore.sold": -1 }).limit(10)
   res.json(products)
 })

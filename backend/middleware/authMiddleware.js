@@ -39,4 +39,13 @@ const admin = (req, res, next) => {
   }
 }
 
-export { protect, admin }
+const store = (req, res, next) => {
+  if (req.user && req.user.isStore) {
+    next()
+  } else {
+    res.status(401)
+    throw new Error('Not authorized as an store')
+  }
+}
+
+export { protect, admin, store }
