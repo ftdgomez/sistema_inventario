@@ -69,8 +69,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
     name,
     brand,
     description,
-    prices,
-    sold
+    variants,
+    categories
   } = req.body
 
   const product = await Product.findById(req.params.id)
@@ -81,8 +81,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
     product.name =  name
     product.brand = brand
     product.description = description
-    product.prices =  prices
-    product.sold = sold
+    product.variants =  variants  
+    product.categories = categories
 
     const updatedProduct = await product.save()
     res.json(updatedProduct)

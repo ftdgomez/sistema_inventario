@@ -1,15 +1,22 @@
-import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { listProducts } from '../actions/productActions'
+import { Link } from 'react-router-dom'
+
 import Loader from '../components/Loader'
 import ProductList from '../components/ProductList'
-import { Container, Row, Col, DropdownButton, Dropdown, Form, FormControl, Button } from 'react-bootstrap'
+
+import { listProducts } from '../actions/productActions'
+
+import { Form, FormControl, Button } from 'react-bootstrap'
+import MainLayout from '../layouts/MainLayout'
+import Paginate from '../components/Paginate'
 
 const HomeScreen = ({ match }) => {
   const keyword = match.params.keyword
 
   const pageNumber = match.params.pageNumber || 1
+
+  const [searchWord, setSearchWord] = useState('')
 
   const dispatch = useDispatch()
 
@@ -20,6 +27,7 @@ const HomeScreen = ({ match }) => {
     dispatch(listProducts(keyword, pageNumber))
   }, [dispatch, keyword, pageNumber])
 
+
   if (loading)
   {
     return <Loader />
@@ -27,56 +35,25 @@ const HomeScreen = ({ match }) => {
   else
   {
     return (
-      <div className="px-4" style={{maxWidth: '1366px', margin: 'auto'}}>
-        <Row>
-          <Col>
-            <header className="mb-4">
-              <Row>
-                <Col md={3}>
-                  <h4>Inventario Maestro</h4>
-                </Col>
-                <Col>
-                  <div className="d-flex align-items-center">
-                    <DropdownButton id="dropdown-basic-button" title="Categoria: Todas"        size="sm"
-                    variant="outline-secondary">
-                      <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                      <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                      <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    </DropdownButton>
-                    <DropdownButton className="ml-4" id="dropdown-basic-button" title="Tienda: Todas"        size="sm"
-                    variant="outline-secondary">
-                      <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                      <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                      <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    </DropdownButton>
-                    <Form inline className="ml-4">
-                      <FormControl size="sm" type="text" placeholder="Buscar por palabra clave" className="mr-sm-2" />
-                      <Button size="sm" variant="outline-primary">Buscar</Button>
-                    </Form>
-                    <Button size="sm" variant="primary" className="ml-auto">+ Agregar Producto</Button>
-                  </div>
-                </Col>
-              </Row>
-            </header>
-            <ProductList products={products} />
-          </Col>
-          <Col md={2}>
-            Datos generales.
-            <p className="border p-4 bg-white">
-              <span>productos en sistema.</span><br /> 
-              <strong style={{fontSize: '24px'}}>1200</strong>
-            </p>
-            <p className="border p-4 bg-white">
-              productos vendidos este mes.<br /> 
-              <strong style={{fontSize: '24px'}}>100</strong>
-            </p>
-            <p className="border p-4 bg-white">
-              productos fuera de stock.<br /> 
-              <strong className="text-danger" style={{fontSize: '24px'}}>4</strong>
-            </p>
-          </Col>
-        </Row>
-      </div>
+        <MainLayout>
+          <div className="px-4 py-3 border rounded-xl bg-white mb-2">
+              <div className="d-flex">
+                <input onChange={(e)=>setSearchWord(e.target.value)} type="text" placeholder="Search" className="mr-sm-2 form-control" />
+                <Link className="btn btn-outline-primary" to={`/search/${searchWord}`}>Search</Link>
+              </div>
+              {keyword && <p className="m-0 p-0 mt-2">Mostrando productos relacionados con <span className="text-primary">"{keyword}"</span></p>}
+          </div>
+          <div className="pt-2 border rounded-xl main-container">
+            <ProductList products={products}/>
+            <div className="paginate-container">
+              <Paginate
+                pages={pages}
+                page={page}
+                keyword={keyword ? keyword : ''}
+              />
+            </div>
+          </div>
+        </MainLayout>
     )
   }
 }
