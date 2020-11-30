@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { login } from '../actions/userActions'
+import logo from '../assets/icon.png'
 
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('')
@@ -31,25 +32,26 @@ const LoginScreen = ({ location, history }) => {
 
   return (
     <FormContainer>
-      <h1>Iniciar Sesión</h1>
+      <img src={logo} alt="logo" style={{height: '32px', width: '32px'}} />
+      <h4>Iniciar Sesión</h4>
       {/* {error && <Message variant='danger'>{error}</Message>} */}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
         <Form.Group controlId='email'>
-          <Form.Label>Email Address</Form.Label>
+          <Form.Label>Dirección de Email</Form.Label>
           <Form.Control
             type='email'
-            placeholder='Enter email'
+            placeholder='Su email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Form.Group controlId='password'>
-          <Form.Label>Password</Form.Label>
+          <Form.Label>Contraseña</Form.Label>
           <Form.Control
             type='password'
-            placeholder='Enter password'
+            placeholder='Su contraseña'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
