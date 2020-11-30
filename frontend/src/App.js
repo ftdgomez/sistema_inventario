@@ -17,7 +17,7 @@ function App() {
             exact
           />
           <Route path='/' component={HomeScreen} exact />
-          <Router component={NotFoundScreen} />
+          <Route component={NotFoundScreen} />
       </main>
     </Router>
   );
