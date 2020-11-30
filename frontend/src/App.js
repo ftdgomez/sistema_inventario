@@ -2,6 +2,7 @@ import './App.scss';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
+import NotFoundScreen from './screens/NotFoundScreen';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             exact
           />
           <Route path='/' component={HomeScreen} exact />
+          <Router component={NotFoundScreen} />
       </main>
     </Router>
   );
