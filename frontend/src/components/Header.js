@@ -32,14 +32,17 @@ const Header = () => {
           <h5 className="list-title"><small>Acciones Rápidas</small></h5>
         </ListGroup.Item>
         <ListGroup.Item>
-          <Button variant="block" className="text-left"><i className="im im-plus" style={{fontSize: '12px'}}></i> Productos</Button>
+          <NavLink to='/create-product' activeClassName='nav-item-c-is-active' className="btn btn-outline"><i className="im im-plus" style={{fontSize: '12px'}}></i> Producto</NavLink>
         </ListGroup.Item>
         <ListGroup.Item>
-          <Button variant="block" className="text-left"><i className="im im-plus" style={{fontSize: '12px'}}></i> Presupuesto</Button>
+          <NavLink to='/presupuesto/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+            <i className="im im-plus" style={{fontSize: '12px'}}></i> Presupuesto
+          </NavLink>
         </ListGroup.Item>
         <ListGroup.Item>
-          <Button variant="block" className="text-left"><i className="im im-plus" style={{fontSize: '12px'}}></i> Nota de entrega</Button>
-        </ListGroup.Item>
+        <NavLink to='/nota-de-entrega/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+            <i className="im im-plus" style={{fontSize: '12px'}}></i> Nota De Entrega
+          </NavLink>        </ListGroup.Item>
         <ListGroup.Item>
           <Button size="sm" variant="outline-primary" onClick={logoutHandler}>Cerrar Sesión</Button>
         </ListGroup.Item>

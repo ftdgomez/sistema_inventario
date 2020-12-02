@@ -1,5 +1,6 @@
 import React from 'react'
 import { Badge, Button, Form, Accordion, Row, Col, Carousel } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import defaultImg from '../assets/placeholder.jpg'
 const ProductList = ({products}) => {
 
@@ -39,7 +40,7 @@ const ProductList = ({products}) => {
             </Form>
             <img src={product.img ? product.img[0] : defaultImg } alt="" style={{height: '50px', width: '50px'}} />
             <span>{product._id.slice(-4).toString().replace(/,/g, '')}</span>
-            <span><a href="#">{product.name}</a></span>
+            <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>
             <span>{product.tags.map((tag, index) => (<Badge key={tag+index} className="mr-2 badge-custom">{tag}</Badge>))}</span>
             <span>{countStock(product.variants)}</span>
             <Accordion.Toggle as={Button} className="mr-2" size="sm" variant="outline-secondary" eventKey={product._id}>

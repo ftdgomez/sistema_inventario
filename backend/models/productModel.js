@@ -7,7 +7,7 @@ const variationSchema = mongoose.Schema({
   },
   unityPrice: {
     type: Number,
-    required: true
+    required: false
   },
   sellPrice: {
     type: Number,

@@ -55,6 +55,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     res.status(201).json(createdProduct)
   } catch (error) {
     res.status(400)
+    console.error(error)
     throw new Error('Bad request')
   }
 })
