@@ -7,7 +7,8 @@ import Product from '../models/productModel.js'
 // @access  Public
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 20
+
+  const pageSize = Number(req.query.pageSize)
   const page = Number(req.query.pageNumber) || 1
   const keyword = req.query.keyword
     ? {
@@ -17,13 +18,21 @@ export const getProducts = asyncHandler(async (req, res) => {
         },
       }
     : {}
-  const count = await Product.countDocuments({...keyword})
-  const products = await Product.find({...keyword})
-      .limit(pageSize)
-      .skip(pageSize * (page - 1))
-      .populate('store')
-      
-  res.json({products, page, pages: Math.ceil(count / pageSize)})
+
+  if (pageSize > 0)
+  {
+    const count = await Product.countDocuments({...keyword})
+    const products = await Product.find({...keyword})
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .populate('store')
+    res.json({products, page, pages: Math.ceil(count / pageSize)})
+  }
+  else
+  {
+    const products = await Product.find({...keyword}).populate('store')
+    res.json({products, page, pages: 1})
+  }
 })
 
 

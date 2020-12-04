@@ -26,6 +26,24 @@ $custom-border-radius: 8px;
   overflow-y: auto;
 }
 
+.product-list-presupuesto{
+  .product-list-header{
+    border-bottom: 1px solid #e1e1e1;
+  }
+  .product-list-grid{
+    display: grid;
+    grid-template-columns: 100px 60px 1fr 90px;
+    gap: 1em;
+  }
+  .product-item{
+    padding: .5em 0;
+    border-bottom: 1px solid #e1e1e1;
+    align-items: center;
+  }
+  padding: 0 1em;
+  overflow-y: auto;
+}
+
 .badge-custom{
   border: 1px solid #e1e1e1;
 }

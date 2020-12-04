@@ -7,7 +7,7 @@ import PresupuestoProductList from '../components/PresupuestoProductList'
 import { createPresupuesto } from '../actions/presupuestoActions'
 import { Link } from 'react-router-dom'
 
-const CreatePresupuesto = ({ history, match}) => {
+const CrearNotaDeEntrega = ({ history, match}) => {
   const dispatch = useDispatch()
 
   const productList = useSelector((state) => state.productList)
@@ -92,13 +92,13 @@ const CreatePresupuesto = ({ history, match}) => {
               {'<'}
             </button>
             <header className="ml-2 pt-2">
-                <h4>Generar Presupuesto</h4>
+                <h4>Generar Nota De Entrega</h4>
             </header>
           </div>
           <Toast className="border border-primary" onClose={() => setSuccess(false)} show={success} delay={3000} autohide>
             <Toast.Body>Se ha creado un presupuesto con éxito.
             <br />
-            <Link to="/presupuestos"><span className="text-primary">Ir al listado de presupuestos.</span></Link></Toast.Body>
+            <Link to="/notas-de-entrega"><span className="text-primary">Ir al listado de Notas De Entrega.</span></Link></Toast.Body>
           </Toast>
           <Container fluid >
           <Row>
@@ -116,7 +116,7 @@ const CreatePresupuesto = ({ history, match}) => {
 
                 <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
                       <h4><small>Items</small></h4>
-                      {items.length < 1 && <p>Utilice el filtrado de productos para empezar agregar items a este presupuesto.</p>}
+                      {items.length < 1 && <p>Utilice el filtrado de productos para empezar agregar items a esta Nota De Entrega.</p>}
                       <div>
                         {
                           items.map((v, index) => (
@@ -152,7 +152,7 @@ const CreatePresupuesto = ({ history, match}) => {
                         }
                       </div>
                 </div>
-                <Button className="mb-4" type="submit" variant="primary">Crear Presupuesto</Button>
+                <Button className="mb-4" type="submit" variant="primary">Crear Nota De Entrega</Button>
                 </Form>
             </Col>
             <Col sm={12} md={6}>
@@ -170,4 +170,4 @@ const CreatePresupuesto = ({ history, match}) => {
   )
 }
 
-export default CreatePresupuesto
+export default CrearNotaDeEntrega

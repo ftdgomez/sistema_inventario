@@ -31,7 +31,7 @@ const ProductList = ({products}) => {
         <div>Controles</div>
       </header>
       {products.map(product => (
-        <Accordion key={product._id}>
+        <div key={product._id}>
           <div className="product-item product-list-grid">
             <Form>
               <Form.Group controlId="formBasicCheckbox">
@@ -43,11 +43,15 @@ const ProductList = ({products}) => {
             <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>
             <span>{product.tags.map((tag, index) => (<Badge key={tag+index} className="mr-2 badge-custom">{tag}</Badge>))}</span>
             <span>{countStock(product.variants)}</span>
-            <Accordion.Toggle as={Button} className="mr-2" size="sm" variant="outline-secondary" eventKey={product._id}>
+            <Link to={`/product/${product._id}`} className="mr-2 btn btn-outline-secondary">
+              {/* <i className="im im-care-down" style={{fontSize: '90%'}}></i> */}
+              Editar
+            </Link>
+    {/*         <Accordion.Toggle as={Button} className="mr-2" size="sm" variant="outline-secondary" eventKey={product._id}>
               <i className="im im-care-down" style={{fontSize: '90%'}}></i>
-            </Accordion.Toggle>
+            </Accordion.Toggle> */}
           </div>
-          <Accordion.Collapse eventKey={product._id} className="p-4">
+{/*           <Accordion.Collapse eventKey={product._id} className="p-4">
             <div className="product-carousel">
               <div>
                     {product.img ?
@@ -118,8 +122,8 @@ const ProductList = ({products}) => {
                     </Form>
                 </div>
             </div>
-          </Accordion.Collapse>
-        </Accordion>
+          </Accordion.Collapse> */}
+        </div>
       ))}
     </div>
   )

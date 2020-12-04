@@ -4,6 +4,7 @@ import { NavLink, Link } from 'react-router-dom'
 import logo from '../assets/logo.svg'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/userActions'
+import { resetListProducts } from '../actions/productActions'
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -15,15 +16,21 @@ const Header = () => {
     dispatch(logout())
   }
 
+  const handleRedirect = (e) => {
+    e.preventDefault()
+    dispatch(resetListProducts())
+    window.location.href = '/'
+  }
+
   return (
     <header className="m-2 border rounded-xl bg-white">
       <div className="border-bottom py-3 px-4">
         <Link to="/"><img src={logo} alt="" style={{height: 'auto', width: '100%'}} /></Link>
       </div>
       <nav>
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/'>Productos</NavLink>
-      {/*   <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/categorias'>Categorias</NavLink> */}
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/notas-de-entrega'>Notas De Entrega</NavLink>
+        <NavLink onClick={handleRedirect} activeClassName='nav-item-c-is-active' className="nav-item-c" to='/'>Productos</NavLink>
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/presupuestos'>Presupuestos</NavLink>
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/nota-de-entrega'>Notas De Entrega</NavLink>
         <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/tiendas'>Tiendas</NavLink>
       </nav>
   
@@ -35,7 +42,7 @@ const Header = () => {
           <NavLink to='/create-product' activeClassName='nav-item-c-is-active' className="btn btn-outline"><i className="im im-plus" style={{fontSize: '12px'}}></i> Producto</NavLink>
         </ListGroup.Item>
         <ListGroup.Item>
-          <NavLink to='/presupuesto/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+          <NavLink  to='/presupuesto/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
             <i className="im im-plus" style={{fontSize: '12px'}}></i> Presupuesto
           </NavLink>
         </ListGroup.Item>

@@ -9,6 +9,13 @@ import {
 } from './reducers/productReducers'
 
 import {
+  presupuestoListReducer,
+  presupuestoCreateReducer,
+  presupuestoUpdateReducer,
+  presupuestoDetailsReducer
+} from './reducers/presupuestosReducers'
+
+import {
   userLoginReducer,
   userRegisterReducer,
   userDetailsReducer,
@@ -23,6 +30,10 @@ const reducer = combineReducers({
   productCreate: productCreateReducer,
   productUpdate: productUpdateReducer,
   productDetails: productDetailsReducer,
+  presupuestoList: presupuestoListReducer,
+  presupuestoCreate: presupuestoCreateReducer,
+  presupuestoUpdate: presupuestoUpdateReducer,
+  presupuestoDetails: presupuestoDetailsReducer,
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,

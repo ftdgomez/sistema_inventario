@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import MainLayout from '../layouts/MainLayout'
+
 import { Link } from 'react-router-dom'
 
 import Loader from '../components/Loader'
@@ -7,7 +9,6 @@ import ProductList from '../components/ProductList'
 
 import { listProducts } from '../actions/productActions'
 
-import MainLayout from '../layouts/MainLayout'
 import Paginate from '../components/Paginate'
 
 import { Button, Form } from 'react-bootstrap'
