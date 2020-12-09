@@ -25,14 +25,14 @@ import {
 } from '../constants/productConstants'
 import { logout } from './userActions'
 
-export const listProducts = (keyword = '', pageNumber = '', pageSize = 20) => async (
+export const listProducts = (keyword = '', pageNumber = '', pageSize = 20, keyName = 'name') => async (
   dispatch
 ) => {
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST })
 
     const { data } = await axios.get(
-      `/api/products?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+      `/api/products?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}&keyName=${keyName}`
     )
 
     dispatch({
@@ -105,6 +105,8 @@ export const createProduct = (productData) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     }
+
+    productData.store = userInfo._id
 
     const { data } = await axios.post(`/api/products`, productData, config)
 

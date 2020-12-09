@@ -1,0 +1,46 @@
+[+] Se ha replanteado la forma en la que se estructura los datos en el sistema.
+Modificaciones en model de Usuario y Productos
+
+[+] Prueba de estrés, se ha aumentado el número de productos en la base de datos a
+3000 para probar la escalabilidad del sistema.
+
+[+] Se han agregado opciones de filtrado a la búsqueda de productos,
+  ahora se puede filtrar por "sku", por "nombre" o por "tag"
+
+[+] Modificación en los modelos de la base de datos.
+Se han combinado el modelo de usuarios y tiendas a un solo modelo que
+incluye:
+  nombre del encargado,
+  email de acceso al sistema,
+  contraseña de acceso al sistema
+  dirección de tienda,
+  url google maps,
+  tlf de contacto,
+  mail de contacto
+
+[+] Modificación en modelo de Productos
+Ahora cada producto pertenece unicamente a la tienda que lo creó.
+Se relacionará su existencia en las distintas tiendas usando el SKU
+
+[+] Modificación en Modelo de Presupuestos y Notas de entrega.
+Ahora el campo "vendedor" se autorellena con la tienda que está creando el presupuesto
+o nota de entrega.
+Los "items" ahora son un objeto con "cantidad", "id_producto", "total"
+Agregado al modelo el "estado" del presupuesto. Puede ser pendiente, aprobado o rechazado.
+Agregado un mensaje de not found cuando no hay presupuestos en el sistema.
+
+[+] Modificación en pantalla de crear presupuesto
+Ahora se piden "datos de cliente" en vez de "cliente y vendedor"
+Se pide nombre, email y teléfono.
+Agregado selector de fecha para establecer fecha en la que vence el presupuesto.
+Los productos ahora solo muestran su SKU, la búsqueda también debe ser por SKU
+
+[+] Agregado botón para esconder la barra de navegación
+
+[+] Agregado identificador de Usario "Logged as" en barra de navegación
+
+[+] Al crear un producto exitosamente la interfaz provee de un feedback visual
+
+[+] 
+
+

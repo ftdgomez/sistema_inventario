@@ -10,7 +10,7 @@ const ProductList = ({products}) => {
 
     for (let i = 0; i < variants.length; i++) {
       const variant = variants[i];
-      stockFinal += variant.inStore.reduce( (acc, el) => acc + el.countInStock, 0 )
+      stockFinal += variant.countInStock
       variantsQty += 1;
     }
 
@@ -23,8 +23,8 @@ const ProductList = ({products}) => {
     <div className="product-list">
       <header className="product-list-header product-list-grid">
         <div>#</div>
-        <div></div>
-        <div>sku</div>
+        <div>Img</div>
+        <div>Sku</div>
         <div>Nombre</div>
         <div>Tags</div>
         <div>Stock</div>
@@ -39,7 +39,7 @@ const ProductList = ({products}) => {
               </Form.Group>
             </Form>
             <img src={product.img ? product.img[0] : defaultImg } alt="" style={{height: '50px', width: '50px'}} />
-            <span>{product._id.slice(-4).toString().replace(/,/g, '')}</span>
+            <span>{product.sku}</span>
             <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>
             <span>{product.tags.map((tag, index) => (<Badge key={tag+index} className="mr-2 badge-custom">{tag}</Badge>))}</span>
             <span>{countStock(product.variants)}</span>

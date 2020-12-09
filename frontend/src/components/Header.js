@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/userActions'
 import { resetListProducts } from '../actions/productActions'
 
-const Header = () => {
+const Header = ({ setHeaderState, headerState }) => {
   const dispatch = useDispatch()
 
   const userLogin = useSelector((state) => state.userLogin)
@@ -30,8 +30,8 @@ const Header = () => {
       <nav>
         <NavLink onClick={handleRedirect} activeClassName='nav-item-c-is-active' className="nav-item-c" to='/'>Productos</NavLink>
         <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/presupuestos'>Presupuestos</NavLink>
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/nota-de-entrega'>Notas De Entrega</NavLink>
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/tiendas'>Tiendas</NavLink>
+  {/*       <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/nota-de-entrega'>Notas De Entrega</NavLink> */}
+     {/*    <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/tiendas'>Tiendas</NavLink> */}
       </nav>
   
       <ListGroup className="m-2 quick-actions">
@@ -41,19 +41,32 @@ const Header = () => {
         <ListGroup.Item>
           <NavLink to='/create-product' activeClassName='nav-item-c-is-active' className="btn btn-outline"><i className="im im-plus" style={{fontSize: '12px'}}></i> Producto</NavLink>
         </ListGroup.Item>
+        
         <ListGroup.Item>
           <NavLink  to='/presupuesto/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
             <i className="im im-plus" style={{fontSize: '12px'}}></i> Presupuesto
           </NavLink>
         </ListGroup.Item>
-        <ListGroup.Item>
-        <NavLink to='/nota-de-entrega/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
-            <i className="im im-plus" style={{fontSize: '12px'}}></i> Nota De Entrega
-          </NavLink>        </ListGroup.Item>
-        <ListGroup.Item>
-          <Button size="sm" variant="outline-primary" onClick={logoutHandler}>Cerrar Sesión</Button>
-        </ListGroup.Item>
-      </ListGroup>
+
+{/*         <ListGroup.Item>
+          <NavLink to='/nota-de-entrega/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+              <i className="im im-plus" style={{fontSize: '12px'}}></i> Nota De Entrega
+            </NavLink>        </ListGroup.Item> */}
+            
+          <ListGroup.Item>
+            <Button size="sm" variant="outline-primary" onClick={logoutHandler}>Cerrar Sesión</Button>
+          </ListGroup.Item>
+        </ListGroup>
+      <div className="d-flex mx-4">
+        <button onClick={()=>setHeaderState(!headerState)} className='btn btn-light border my-4'>
+          {'<'}
+        </button>
+        <p className="mt-3 ml-2">
+          <small>Logged as: 
+            <span className="text-primary">{userInfo.name}</span>
+          </small>
+        </p>
+      </div>
     </header>
   )
 }

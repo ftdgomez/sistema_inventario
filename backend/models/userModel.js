@@ -25,6 +25,27 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       required: true,
       default: false
+    },
+    address: {
+      type: String,
+      required: false
+    },
+    googleMapsUrl: {
+      type: String,
+      required: false
+    },
+    contactPhone: {
+      type: String,
+      required: false,
+      match: [/([0-9])\w+/g, 'Solo valores numericos.'] // only numerical values
+    },
+    contactMail: {
+      type: String,
+      required: false,
+      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'] // only email format
+    },
+    hours: {
+      type: [String]
     }
   },
   {

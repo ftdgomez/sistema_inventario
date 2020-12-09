@@ -12,7 +12,8 @@ import {
   presupuestoListReducer,
   presupuestoCreateReducer,
   presupuestoUpdateReducer,
-  presupuestoDetailsReducer
+  presupuestoDetailsReducer,
+  presupuestoDeleteReducer
 } from './reducers/presupuestosReducers'
 
 import {
@@ -34,6 +35,7 @@ const reducer = combineReducers({
   presupuestoCreate: presupuestoCreateReducer,
   presupuestoUpdate: presupuestoUpdateReducer,
   presupuestoDetails: presupuestoDetailsReducer,
+  presupuestoDelete: presupuestoDeleteReducer,
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,

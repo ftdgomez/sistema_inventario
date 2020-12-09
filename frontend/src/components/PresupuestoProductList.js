@@ -1,7 +1,6 @@
 import React from 'react'
-import { Badge, Button, Form, Accordion, Row, Col, Carousel } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import defaultImg from '../assets/placeholder.jpg'
+import { Button, Table } from 'react-bootstrap'
+
 const PresupuestoProductList = ({products, setItems, items}) => {
 
   const countStock = (variants) => {
@@ -10,7 +9,7 @@ const PresupuestoProductList = ({products, setItems, items}) => {
 
     for (let i = 0; i < variants.length; i++) {
       const variant = variants[i];
-      stockFinal += variant.inStore.reduce( (acc, el) => acc + el.countInStock, 0 )
+      stockFinal += variant.countInStock
       variantsQty += 1;
     }
 
@@ -20,22 +19,32 @@ const PresupuestoProductList = ({products, setItems, items}) => {
   }
   
   return (
-    <div style={{maxHeight: '648px'}} className="product-list-presupuesto">
-      <header className="product-list-header product-list-grid">
-        <div>#</div>
-        <div>sku</div>
-        <div>Nombre</div>
-        <div>Stock</div>
-      </header>
-      {products.map(product => (
-          <div key={product._id} className="product-item product-list-grid">
-            <Button  onClick={()=>setItems([...items, {name: product.name, cant: 1, variants: product.variants, id: product._id },])}
-            variant="outline-primary" size="sm">Agregar a presupuesto</Button>
-            <span>{product._id.slice(-4).toString().replace(/,/g, '')}</span>
-            <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>
-            <span>{countStock(product.variants)}</span>
-          </div>
-      ))}
+    <div style={{maxHeight: '648px'}}>
+        <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>add</th>
+                <th>sku</th>
+                <th>stock</th>
+              </tr>
+            </thead>
+            <tbody>
+       {products.map(product => (
+              <tr key={product._id}>
+                <td>
+                  <Button  onClick={()=>setItems([...items, {name: product.name, qty: 1, variants: product.variants, id: product._id },])}
+                  variant="outline-primary" size="sm">+</Button>
+                </td>
+                <td>
+                  {product.sku}
+                </td>
+                <td>
+                  <span>{countStock(product.variants)}</span>
+                </td>
+              </tr>
+              ))}
+            </tbody>
+        </Table>
     </div>
   )
 }

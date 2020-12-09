@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import MainLayout from '../layouts/MainLayout'
-
-import { Link } from 'react-router-dom'
-
 import Loader from '../components/Loader'
 import ProductList from '../components/ProductList'
-
 import { listProducts } from '../actions/productActions'
-
 import Paginate from '../components/Paginate'
-
-import { Button, Form } from 'react-bootstrap'
+import Searchbar from '../components/Searchbar'
 
 const HomeScreen = ({ history, match }) => {
-  const keyword = match.params.keyword
 
-  const pageNumber = match.params.pageNumber || 1
+  const keyWord = match.params.keyword
+  const pageNumber = match.params.pageNumber
+  const [queriesParams, setParams] = useState({})
 
   const dispatch = useDispatch()
 
@@ -26,23 +21,24 @@ const HomeScreen = ({ history, match }) => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  const [formKeyword, setFormKeyword] = useState('')
-
-  const submitHandler = (e) => {
-    e.preventDefault()
-    if (formKeyword.trim()) {
-      history.push(`/search/${formKeyword}`)
-    } else {
-      history.push('/')
-    }
-  }
 
   useEffect(() => {
-    dispatch(listProducts(keyword, pageNumber))
+    const queries = new URLSearchParams(window.location.search)
+    let finalobj = {}
+    if (queries)
+    {
+      for (let pair of queries)
+      {
+        let obj = {[pair[0]]: pair[1]}
+        finalobj = {...finalobj, ...obj}
+      }
+    }
+    dispatch(listProducts(keyWord, pageNumber, finalobj.pageSize, finalobj.keyName))
+    setParams(finalobj)
     if (!userInfo || !userInfo.isAdmin) {
       history.push('/login')
     }
-  }, [dispatch, keyword, pageNumber, userInfo])
+  }, [dispatch, keyWord, pageNumber, userInfo])
 
 
   if (loading)
@@ -53,22 +49,15 @@ const HomeScreen = ({ history, match }) => {
   {
     return (
         <MainLayout>
-          <div className="px-4 py-3 border rounded-xl bg-white mb-2">
-              <Form onSubmit={submitHandler}>
-                <div className="d-flex">
-                  <Form.Control type="text" onChange={(e)=>setFormKeyword(e.target.value)} placeholder="Search" className="mr-sm-2"></Form.Control>
-                  <Button type="submit" size="sm" variant="outline-primary" to={`/search/${formKeyword}`}>Buscar</Button>
-                </div>
-              </Form>
-              {keyword && <p className="m-0 p-0 mt-2">Mostrando productos relacionados con <span className="text-primary">"{keyword}"</span></p>}
-          </div>
+          <Searchbar history={history} keyword={keyWord} params={queriesParams} />
           <div className="pt-2 border rounded-xl main-container">
             <ProductList products={products}/>
             <div className="paginate-container">
               <Paginate
                 pages={pages}
                 page={page}
-                keyword={keyword ? keyword : ''}
+                keyword={keyWord}
+                keyName={queriesParams.keyName}
               />
             </div>
           </div>

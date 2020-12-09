@@ -69,15 +69,28 @@ export const presupuestoUpdateReducer = (state = { presupuesto: {} }, action) =>
   }
 }
 
+export const presupuestoDeleteReducer = (state = { presupuesto: {} }, action) => {
+  switch (action.type) {
+    case PRESUPUESTO_DELETE_REQUEST:
+      return { loading: true }
+    case PRESUPUESTO_DELETE_SUCCESS:
+      return { loading: false, success: true, presupuesto: action.payload }
+    case PRESUPUESTO_DELETE_FAIL:
+      return { loading: false, error: action.payload }
+    default:
+      return state
+  }
+}
+
 export const presupuestoDetailsReducer = (
-  state = { presupuesto: { reviews: [] } },
+  state = { },
   action
 ) => {
   switch (action.type) {
     case PRESUPUESTO_DETAILS_REQUEST:
       return { ...state, loading: true }
     case PRESUPUESTO_DETAILS_SUCCESS:
-      return { loading: false, presupuesto: action.payload }
+      return { loading: false, presupuesto: action.payload, success: true }
     case PRESUPUESTO_DETAILS_FAIL:
       return { loading: false, error: action.payload }
     default:

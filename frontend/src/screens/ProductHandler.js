@@ -2,17 +2,19 @@ import React, { useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import { createProduct } from '../actions/productActions'
 import MainLayout from '../layouts/MainLayout'
-import { Form, Col, Button, Toast } from 'react-bootstrap'
+import { Form, Col, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import {toast} from 'react-toastify'
 
 const ProductHandler = () => {
   const [name, setName] = useState('')
   const [brand, setBrand] = useState('')
   const [description, setDescription] = useState('')
   const [tagsStr, setTags] = useState('')
+  const [sku, setSku ] = useState('')
 
   const [isVariant, setForVariant] = useState(false)
-  const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', stock: ''}])
+  const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
 
   const [success, setSuccess] = useState(false)
 
@@ -39,26 +41,35 @@ const ProductHandler = () => {
     let tags = tagsStr.split(',').map(el => el.trim())
     dispatch(createProduct({
       name,
+      sku,
       brand,
-      description,
       tags,
+      description,
       variants
     }))
+  }
+
+  useEffect(() => {
     if (productCreate.success)
     {
       setName('')
       setBrand('')
       setDescription('')
       setTags('')
+      setSku('')
       setForVariant(false)
-      setVariants([{ref: 'main', sellPrice: '', stock: ''}])
-      setSuccess(true)
+      setVariants([{ref: 'main', sellPrice: '', countInStock: ''}])
+      toast.success('Maravilloso! el producto ha sido creado con éxito.')
+      dispatch({ type: 'PRODUCT_CREATE_RESET' })
     }
-    else
+    if (productCreate.error)
     {
-      alert('Ha ocurrido un error, revise la data.')
+      toast.error(productCreate.error)
     }
-  }
+/*     return () => {
+      cleanup
+    } */
+  }, [productCreate])
 
   return (
       <MainLayout>
@@ -71,10 +82,6 @@ const ProductHandler = () => {
               <h4>Crear Producto Nuevo</h4>
           </header>
         </div>
-
-        <Toast onClose={() => setSuccess(false)} show={success} delay={3000} autohide>
-          <Toast.Body>Se ha creado un producto con éxito.</Toast.Body>
-        </Toast>
 
         <Form className="px-4" style={{maxWidth: '700px'}} onSubmit={submitHandler}>
 
@@ -93,6 +100,16 @@ const ProductHandler = () => {
               </Form.Text>
             </Col>
           </Form.Row>
+
+          <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
+            <h4><small>Sku</small></h4>
+            {/* <p>Escriba los tags separados por comas (,)</p> */}
+            <Form.Control onChange={(e)=> setSku(e.target.value)} value={sku} placeholder="xxxxxxxx" />
+            <Form.Text className="text-muted">
+              Este código identificador único funciona para identificar el mismo producto entre tiendas. También
+              es requerido por el sistema de creación de presupuestos y notas de entrega.
+            </Form.Text>
+          </div>
 
           <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
             <h4><small>Tags</small></h4>
@@ -123,13 +140,16 @@ const ProductHandler = () => {
                     variants.map((v, index) => (
                       <Form.Row className="mb-2" key={`ref-item-${index}`}>
                           <Col>
+                            <p className="m-0"><small>Referencia De Variante</small></p>
                             <Form.Control onChange={(e)=>handleVariantChange(e, index, 'ref')} placeholder="Ref" value={v.ref} />
                           </Col>
                           <Col>
+                          <p className="m-0"><small>Precio de venta</small></p>
                             <Form.Control onChange={(e)=>handleVariantChange(e, index, 'sellPrice')} placeholder="Precio" value={v.sellPrice} />
                           </Col>
                           <Col>
-                            <Form.Control onChange={(e)=>handleVariantChange(e, index, 'stock')} type="number" placeholder="stock" value={v.stock} />
+                          <p className="m-0"><small>Cantidad en stock</small></p>
+                            <Form.Control onChange={(e)=>handleVariantChange(e, index, 'countInStock')} type="number" placeholder="stock" value={v.countInStock} />
                           </Col>
                           <Col sm={1}>
                             {index > 0 && <Button onClick={()=>setVariants(variants.filter((variants, i) => i !== index))} variant="danger">x</Button>}
@@ -138,20 +158,22 @@ const ProductHandler = () => {
                     ))
                   }
 
-                  <Button onClick={()=>setVariants([...variants, {ref: '', sellPrice: '', stock: ''}])} className="mt-4"><i className="im im-plus mr-2" style={{fontSize: '12px'}}></i>Agregar Variante</Button>
+                  <Button onClick={()=>setVariants([...variants, {ref: '', sellPrice: '', countInStock: ''}])} className="mt-4"><i className="im im-plus mr-2" style={{fontSize: '12px'}}></i>Agregar Variante</Button>
                 </div>
               :
                 <Form.Row>
                   <Col md={7}>
+                    <p className="m-0"><small>Precio de venta</small></p>
                     <Form.Control onChange={(e)=>setVariants([{...variants[0], sellPrice: e.target.value}])} value={variants[0].sellPrice} placeholder="Precio" />
                   </Col>
                   <Col>
-                    <Form.Control onChange={(e)=>setVariants([{...variants[0], stock: e.target.value}])} value={variants[0].stock} type="number" placeholder="999" />
+                    <p className="m-0"><small>Cantidad en stock</small></p>
+                    <Form.Control onChange={(e)=>setVariants([{...variants[0], countInStock: e.target.value}])} value={variants[0].countInStock} type="number" placeholder="999" />
                   </Col>
                 </Form.Row>
             }
           </div>
-          <Button className="mb-4" type="submit" variant="primary" size="sm">Crear Producto</Button>
+          <Button className="mb-4 btn-block" type="submit" variant="primary">Crear Producto</Button>
         </Form>
         </div>
       </MainLayout>

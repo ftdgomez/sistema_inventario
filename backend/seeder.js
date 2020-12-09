@@ -2,14 +2,12 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import colors from 'colors'
 
-import stores from './data/storeData.js'
+
 import products from './data/productsData.js'
-import categories from './data/categoriesData.js'
 import users from './data/userData.js'
 
-import Store from './models/storeModel.js'
+
 import Product from './models/productModel.js'
-import Category from './models/categoryModel.js'
 import User from './models/userModel.js'
 
 import connectDB from './config/db.js'
@@ -25,11 +23,20 @@ const importUserAndProducts = async () => {
     const createdUsers = await User.insertMany(users)
     const adminUser = createdUsers[0]._id
     
-    const sampleProducts = products.map((product) => {
-      return { ...product, user: adminUser }
+    const draftProducts = products.map((product) => {
+      return { ...product, store: adminUser }
     })
 
-    await Product.insertMany(sampleProducts)
+    
+    await Product.insertMany(draftProducts)
+    
+/*     const sampleProducts = createdProducts.map(product => {
+      return { ...product, sku: product._id.slice(-4).toString().replace(/,/g, '')}
+    }) */
+/* 
+    createProducts.forEach(async (product) => {
+      await Product.update({sku: product._id.slice(-6).toString().replace(/,/g, '')})
+    }) */
 
     console.log('Data Imported! users and products'.green.inverse)
   }
@@ -39,23 +46,9 @@ const importUserAndProducts = async () => {
   }
 }
 
-const importCategories = async () => {
-  try {
-    await Store.deleteMany()
-    await Category.deleteMany()
-    await Store.insertMany(stores)
-    await Category.insertMany(categories)
-    console.log('Data Imported! stores and categories'.green.inverse)
-  } catch (error) {
-    console.error(`${error}`.red.inverse)
-    process.exit(1)
-  }
-}
-
 
 const importData = async () =>{
   await importUserAndProducts()
-  await importCategories()
   process.exit()
 }
 /*  

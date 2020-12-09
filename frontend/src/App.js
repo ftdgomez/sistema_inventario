@@ -10,6 +10,9 @@ import PresupuestosListScreen from './screens/PresupuestosListScreen';
 import CrearNotaDeEntrega from './screens/CrearNotaDeEntrega'
 import NotasDeEntregaListScreen from './screens/NotaDeEntregaListScreen';
 import TiendasList from './screens/TiendasList';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   return (
     <Router>
@@ -29,7 +32,10 @@ function App() {
           <Route path='/create-product' component={ProductHandler} exact />
           
           <Route path='/presupuesto/create' component={CreatePresupuesto} exact />
+          <Route path='/presupuesto/edit/:id' component={CreatePresupuesto} exact />
+
           <Route path='/nota-de-entrega/create' component={CrearNotaDeEntrega} exact />
+
 
           <Route path='/presupuestos' component={PresupuestosListScreen} exact />
           <Route path='/presupuestos/search/:keyword' component={PresupuestosListScreen} exact />
@@ -53,6 +59,7 @@ function App() {
 
          {/*  <Route component={NotFoundScreen} /> */}
       </main>
+      <ToastContainer />
     </Router>
   );
 }

@@ -4,10 +4,10 @@ import morgan from 'morgan'
 import colors from 'colors'
 import connectDB from './config/db.js'
 import path from 'path'
+
 import productRoutes from './routes/productRoutes.js'
-import storeRoutes from './routes/storeRoutes.js'
 import userRoutes from './routes/userRoutes.js'
-import notasRoutes from './routes/notasRoutes.js'
+import presupuestosRoutes from './routes/presupuestosRoutes.js'
 
 dotenv.config()
 
@@ -23,9 +23,8 @@ if (process.env.NODE_ENV === 'development')
 app.use(express.json())
 
 app.use('/api/products', productRoutes)
-app.use('/api/stores', storeRoutes)
 app.use('/api/users', userRoutes)
-app.use('/api/notas', notasRoutes)
+app.use('/api/presupuestos', presupuestosRoutes)
 
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))

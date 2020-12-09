@@ -14,7 +14,22 @@ const EditProduct = ({ match, history }) => {
   const [brand, setBrand] = useState('')
   const [description, setDescription] = useState('')
   const [tagsStr, setTags] = useState('')
-  const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', stock: ''}])
+  const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
+
+  const handleItemChange = (e, index, key, value) => {
+    let tempArr = []
+    variants.forEach((el, i) => {
+      if (i !== index)
+      {
+        tempArr.push(el)
+      }
+      else
+      {
+        tempArr.push({...el, [key]: value ? value : e.target.value})
+      }
+    });
+    setVariants(tempArr)
+  }
 
   const [success, setSuccess] = useState(false)
 
@@ -82,10 +97,6 @@ const EditProduct = ({ match, history }) => {
           </header>
         </div>
 
-     {/*    <Toast onClose={() => setSuccess(false)} show={success} delay={3000} autohide>
-          <Toast.Body>Se ha creado un producto con éxito.</Toast.Body>
-        </Toast> */}
-
         <Form onSubmit={submitHandler} className="px-4" style={{maxWidth: '700px'}} >
 
           <Form.Row className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
@@ -123,13 +134,16 @@ const EditProduct = ({ match, history }) => {
                     variants.map((v, index) => (
                       <Form.Row className="mb-2" key={`ref-item-${index}`}>
                           <Col>
-                            <Form.Control placeholder="Ref" value={v.ref} />
+                            <small>Ref, Variante.</small>
+                            <Form.Control onChange={(e)=>handleItemChange(e, index, 'ref')}  placeholder="Ref" value={v.ref} />
                           </Col>
                           <Col>
-                            <Form.Control placeholder="Precio" value={v.sellPrice} />
+                            <small>Precio de venta.</small>
+                            <Form.Control onChange={(e)=>handleItemChange(e, index, 'sellPrice')} placeholder="Precio" value={v.sellPrice} />
                           </Col>
                           <Col>
-                            <Form.Control type="number" placeholder="stock" value={v.stock} />
+                            <small>Stock.</small>
+                            <Form.Control onChange={(e)=>handleItemChange(e, index, 'countInStock')} type="number" placeholder="stock" value={v.countInStock} />
                           </Col>
                           <Col sm={1}>
                             {index > 0 && <Button onClick={()=>setVariants(variants.filter((variants, i) => i !== index))} variant="danger">x</Button>}
@@ -138,7 +152,7 @@ const EditProduct = ({ match, history }) => {
                     ))
                   }
 
-                  <Button onClick={()=>setVariants([...variants, {ref: '', sellPrice: '', stock: ''}])} className="mt-4"><i className="im im-plus mr-2" style={{fontSize: '12px'}}></i>Agregar Variante</Button>
+                  <Button onClick={()=>setVariants([...variants, {ref: '', sellPrice: '', countInStock: ''}])} className="mt-4"><i className="im im-plus mr-2" style={{fontSize: '12px'}}></i>Agregar Variante</Button>
                 </div>
           </div>
           <Button className="mb-4" type="submit" variant="primary" size="sm">Actualizar Producto</Button>

@@ -51,7 +51,9 @@ $custom-border-radius: 8px;
 .main-layout{
   display: grid;
   grid-template-columns: 240px 1fr;
+  min-height: 100vh;
 }
+
 .rounded-xl{
   border-radius: $custom-border-radius;
 }
@@ -159,4 +161,11 @@ $custom-border-radius: 8px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1em;
+}
+
+.react-datepicker__input-container input{
+  border: 1px solid #ced4da;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #495057;
 }

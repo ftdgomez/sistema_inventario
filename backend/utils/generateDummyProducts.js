@@ -1,33 +1,41 @@
-import fs from 'fs'
-import faker from 'faker'
+import fs from "fs"
+import faker from "faker"
 
 function createDummyData()
 {
   let counter = 0;
-  let products = ''
+  let products = ""
 
-  while (counter <= 1000)
+  while (counter <= 3000)
   {
-    let randomSold = Math.floor(Math.random() * 1000);
     let product = `
     {
-      name: '${faker.commerce.productName()} ${counter}',
-      brand: 'default',
-      tags: ['batidoras', 'engranaje', 'b&d', 'mx45'],
+      name: "${faker.commerce.productName()} - ${counter}",
+      sku: "test-${counter}",
+      brand: "${faker.company.companyName()}",
+      tags: ["${faker.lorem.word()}", "${faker.lorem.word()}", "${faker.company.companyName()}", "default"],
       description: "${faker.commerce.productDescription()}",
       variants: [
         {
-          ref: 'unique',
-          unityPrice: 1.02,
+          ref: ${counter %2 === 0 ? "\"first\"" : "\"unique\""},
           sellPrice: ${faker.commerce.price()},
-          inStore: [
-            {
-              countInStock: 100,
-              sold: ${randomSold},
-            }
-          ]
+          countInStock: ${Math.floor(Math.random() * 100) + 1},
+          sold: ${Math.floor(Math.random() * 1000)}
         }
-      ]
+        ${
+          counter%2 === 0 ?
+          `
+          ,
+          {
+            ref: "second",
+            sellPrice: ${faker.commerce.price()},
+            countInStock: ${Math.floor(Math.random() * 100) + 1},
+            sold: ${Math.floor(Math.random() * 1000)}
+          }
+          ` : ""
+        }
+      ],
+      store: "",
     },
   `
     products += product
@@ -44,9 +52,9 @@ function createDummyData()
 
   `
 
-  fs.writeFile('../data/productsData.js', content, function (err){
+  fs.writeFile("../data/productsData.js", content, function (err){
     if (err) return console.log(err);
-    console.log('Data escrita!')
+    console.log("Data escrita!")
   })
 }
 

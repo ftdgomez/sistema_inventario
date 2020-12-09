@@ -21,13 +21,23 @@ import {
 import { logout } from '../actions/userActions'
 
 export const listPresupuestos = (keyword = '', pageNumber = '', pageSize = 20) => async (
-  dispatch
+  dispatch, getState
 ) => {
   try {
     dispatch({ type: PRESUPUESTO_LIST_REQUEST })
+    
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
 
     const { data } = await axios.get(
-      `/api/notas/presupuesto?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+      `/api/presupuestos?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config
     )
 
     dispatch({
@@ -64,11 +74,20 @@ export const resetListPresupuestos = () => async (
 }
 
 
-export const listPresupuestoDetails = (id) => async (dispatch) => {
+export const listPresupuestoDetails = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: PRESUPUESTO_DETAILS_REQUEST })
+    const {
+      userLogin: { userInfo },
+    } = getState()
 
-    const { data } = await axios.get(`/api/notas/presupuesto/${id}`)
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+    const { data } = await axios.get(`/api/presupuestos/${id}`, config)
 
     dispatch({
       type: PRESUPUESTO_DETAILS_SUCCESS,
@@ -101,7 +120,7 @@ export const createPresupuesto = (productData) => async (dispatch, getState) => 
       },
     }
 
-    const { data } = await axios.post(`/api/notas/presupuesto`, productData, config)
+    const { data } = await axios.post(`/api/presupuestos`, productData, config)
 
     dispatch({
       type: PRESUPUESTO_CREATE_SUCCESS,
@@ -140,7 +159,7 @@ export const updatePresupuesto = (product) => async (dispatch, getState) => {
     }
 
     const { data } = await axios.put(
-      `/api/products/${product._id}`,
+      `/api/presupuestos/${product._id}`,
       product,
       config
     )
@@ -160,6 +179,48 @@ export const updatePresupuesto = (product) => async (dispatch, getState) => {
     }
     dispatch({
       type: PRESUPUESTO_UPDATE_FAIL,
+      payload: message,
+    })
+  }
+}
+
+export const deletePresupuesto = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: PRESUPUESTO_DELETE_REQUEST,
+    })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+
+    const { data } = await axios.delete(
+      `/api/presupuestos/${id}`,
+      config,
+    )
+
+    dispatch({
+      type: PRESUPUESTO_DELETE_SUCCESS,
+      payload: data,
+    })
+
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    if (message === 'Not authorized, token failed') {
+      dispatch(logout())
+    }
+    dispatch({
+      type: PRESUPUESTO_DELETE_FAIL,
       payload: message,
     })
   }

@@ -8,11 +8,16 @@ import Product from '../models/productModel.js'
 
 export const getProducts = asyncHandler(async (req, res) => {
 
-  const pageSize = Number(req.query.pageSize)
+  const pageSize = Number(req.query.pageSize) || 20
   const page = Number(req.query.pageNumber) || 1
+  const keyName = req.query.keyName || 'name'
   const keyword = req.query.keyword
     ? {
-        name: {
+     /*    name: {
+          $regex: req.query.keyword,
+          $options: 'i',
+        }, */
+        [keyName]: {
           $regex: req.query.keyword,
           $options: 'i',
         },
@@ -25,12 +30,11 @@ export const getProducts = asyncHandler(async (req, res) => {
     const products = await Product.find({...keyword})
         .limit(pageSize)
         .skip(pageSize * (page - 1))
-        .populate('store')
     res.json({products, page, pages: Math.ceil(count / pageSize)})
   }
   else
   {
-    const products = await Product.find({...keyword}).populate('store')
+    const products = await Product.find({...keyword})
     res.json({products, page, pages: 1})
   }
 })
