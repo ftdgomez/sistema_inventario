@@ -3,7 +3,7 @@ import {Form, Button, Col } from 'react-bootstrap'
 
 const Searchbar = ({ history, params, keyword }) => {
 
-  const [keyName, setKeyName] = useState('nombre') 
+  const [keyName, setKeyName] = useState('name') 
 
   const [formKeyword, setFormKeyword] = useState('')
 
