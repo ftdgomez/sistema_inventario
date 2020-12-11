@@ -6,6 +6,7 @@ import {
   deletePresupuesto,
   getOnePresupuesto,
   getPresupuestos,
+  updatePresupuesto
 } from '../controllers/presupuestosController.js'
 
 import { protect, admin } from '../middleware/authMiddleware.js'
@@ -16,6 +17,7 @@ router.route('/')
 
 router.route('/:id')
       .delete(protect, admin, deletePresupuesto)
+      .put(protect, admin, updatePresupuesto)
       .get(protect, admin, getOnePresupuesto)
 
 export default router

@@ -4,7 +4,6 @@ import { NavLink, Link } from 'react-router-dom'
 import logo from '../assets/logo.svg'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/userActions'
-import { resetListProducts } from '../actions/productActions'
 
 const Header = ({ setHeaderState, headerState }) => {
   const dispatch = useDispatch()
@@ -16,21 +15,15 @@ const Header = ({ setHeaderState, headerState }) => {
     dispatch(logout())
   }
 
-  const handleRedirect = (e) => {
-    e.preventDefault()
-    dispatch(resetListProducts())
-    window.location.href = '/'
-  }
-
   return (
     <header className="m-2 border rounded-xl bg-white">
       <div className="border-bottom py-3 px-4">
         <Link to="/"><img src={logo} alt="" style={{height: 'auto', width: '100%'}} /></Link>
       </div>
       <nav>
-        <NavLink onClick={handleRedirect} activeClassName='nav-item-c-is-active' className="nav-item-c" to='/'>Productos</NavLink>
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/'>Productos</NavLink>
         <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/presupuestos'>Presupuestos</NavLink>
-  {/*       <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/nota-de-entrega'>Notas De Entrega</NavLink> */}
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/invoices'>Notas De Entrega</NavLink>
      {/*    <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/tiendas'>Tiendas</NavLink> */}
       </nav>
   
@@ -48,10 +41,10 @@ const Header = ({ setHeaderState, headerState }) => {
           </NavLink>
         </ListGroup.Item>
 
-{/*         <ListGroup.Item>
-          <NavLink to='/nota-de-entrega/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+         <ListGroup.Item>
+          <NavLink to='/invoice/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
               <i className="im im-plus" style={{fontSize: '12px'}}></i> Nota De Entrega
-            </NavLink>        </ListGroup.Item> */}
+            </NavLink>        </ListGroup.Item>
             
           <ListGroup.Item>
             <Button size="sm" variant="outline-primary" onClick={logoutHandler}>Cerrar Sesión</Button>
@@ -63,7 +56,7 @@ const Header = ({ setHeaderState, headerState }) => {
         </button>
         <p className="mt-3 ml-2">
           <small>Logged as: 
-            <span className="text-primary">{userInfo.name}</span>
+            { userInfo && <span className="text-primary">{userInfo.name}</span>}
           </small>
         </p>
       </div>

@@ -5,7 +5,8 @@ import {
   productListReducer,
   productCreateReducer,
   productUpdateReducer,
-  productDetailsReducer
+  productDetailsReducer,
+  productDeleteReducer
 } from './reducers/productReducers'
 
 import {
@@ -15,6 +16,14 @@ import {
   presupuestoDetailsReducer,
   presupuestoDeleteReducer
 } from './reducers/presupuestosReducers'
+
+import {
+  invoiceListReducer,
+  invoiceCreateReducer,
+  invoiceUpdateReducer,
+  invoiceDetailsReducer,
+  invoiceDeleteReducer
+} from './reducers/invoiceReducers'
 
 import {
   userLoginReducer,
@@ -31,6 +40,7 @@ const reducer = combineReducers({
   productCreate: productCreateReducer,
   productUpdate: productUpdateReducer,
   productDetails: productDetailsReducer,
+  productDelete: productDeleteReducer,
   presupuestoList: presupuestoListReducer,
   presupuestoCreate: presupuestoCreateReducer,
   presupuestoUpdate: presupuestoUpdateReducer,
@@ -43,6 +53,11 @@ const reducer = combineReducers({
   userList: userListReducer,
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
+  invoiceList: invoiceListReducer,
+  invoiceCreate: invoiceCreateReducer,
+  invoiceUpdate: invoiceUpdateReducer,
+  invoiceDetails: invoiceDetailsReducer,
+  invoiceDelet: invoiceDeleteReducer
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

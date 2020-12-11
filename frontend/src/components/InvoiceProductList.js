@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Table } from 'react-bootstrap'
 
-const PresupuestoProductList = ({products, setItems, items}) => {
+const InvoiceProductList = ({products, setItems, items}) => {
 
   const countStock = (variants) => {
     let stockFinal = 0;
@@ -49,4 +49,4 @@ const PresupuestoProductList = ({products, setItems, items}) => {
   )
 }
 
-export default PresupuestoProductList
+export default InvoiceProductList

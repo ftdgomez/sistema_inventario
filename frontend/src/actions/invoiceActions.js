@@ -1,30 +1,30 @@
 import axios from 'axios'
 import {
-  PRESUPUESTO_LIST_REQUEST,
-  PRESUPUESTO_LIST_SUCCESS,
-  PRESUPUESTO_LIST_FAIL,
-  PRESUPUESTO_LIST_RESET,
-  PRESUPUESTO_DETAILS_REQUEST,
-  PRESUPUESTO_DETAILS_SUCCESS,
-  PRESUPUESTO_DETAILS_FAIL,
-  PRESUPUESTO_DELETE_SUCCESS,
-  PRESUPUESTO_DELETE_REQUEST,
-  PRESUPUESTO_DELETE_FAIL,
-  PRESUPUESTO_CREATE_REQUEST,
-  PRESUPUESTO_CREATE_SUCCESS,
-  PRESUPUESTO_CREATE_FAIL,
-  PRESUPUESTO_UPDATE_REQUEST,
-  PRESUPUESTO_UPDATE_SUCCESS,
-  PRESUPUESTO_UPDATE_FAIL,
+  INVOICE_LIST_REQUEST,
+  INVOICE_LIST_SUCCESS,
+  INVOICE_LIST_FAIL,
+  INVOICE_LIST_RESET,
+  INVOICE_DETAILS_REQUEST,
+  INVOICE_DETAILS_SUCCESS,
+  INVOICE_DETAILS_FAIL,
+  INVOICE_DELETE_SUCCESS,
+  INVOICE_DELETE_REQUEST,
+  INVOICE_DELETE_FAIL,
+  INVOICE_CREATE_REQUEST,
+  INVOICE_CREATE_SUCCESS,
+  INVOICE_CREATE_FAIL,
+  INVOICE_UPDATE_REQUEST,
+  INVOICE_UPDATE_SUCCESS,
+  INVOICE_UPDATE_FAIL,
 
-} from '../constants/presupuetoConstants'
+} from '../constants/invoiceConstants'
 import { logout } from '../actions/userActions'
 
-export const listPresupuestos = (keyword = '', pageNumber = '', pageSize = 20) => async (
+export const listInvoices = (keyword = '', pageNumber = '', pageSize = 20) => async (
   dispatch, getState
 ) => {
   try {
-    dispatch({ type: PRESUPUESTO_LIST_REQUEST })
+    dispatch({ type: INVOICE_LIST_REQUEST })
     
     const {
       userLogin: { userInfo },
@@ -37,16 +37,18 @@ export const listPresupuestos = (keyword = '', pageNumber = '', pageSize = 20) =
     }
 
     const { data } = await axios.get(
-      `/api/presupuestos?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config
+      `/api/invoices?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config
     )
 
+    console.log(data)
+
     dispatch({
-      type: PRESUPUESTO_LIST_SUCCESS,
+      type: INVOICE_LIST_SUCCESS,
       payload: data,
     })
   } catch (error) {
     dispatch({
-      type: PRESUPUESTO_LIST_FAIL,
+      type: INVOICE_LIST_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
@@ -56,15 +58,15 @@ export const listPresupuestos = (keyword = '', pageNumber = '', pageSize = 20) =
 }
 
 
-export const resetListPresupuestos = () => async (
+export const resetListInvoice = () => async (
   dispatch
 ) => {
   try {
-    dispatch({ type: PRESUPUESTO_LIST_RESET })
+    dispatch({ type: INVOICE_LIST_RESET })
 
   } catch (error) {
     dispatch({
-      type: PRESUPUESTO_LIST_FAIL,
+      type: INVOICE_LIST_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
@@ -74,9 +76,9 @@ export const resetListPresupuestos = () => async (
 }
 
 
-export const listPresupuestoDetails = (id) => async (dispatch, getState) => {
+export const listInvoiceDetails = (id) => async (dispatch, getState) => {
   try {
-    dispatch({ type: PRESUPUESTO_DETAILS_REQUEST })
+    dispatch({ type: INVOICE_DETAILS_REQUEST })
     const {
       userLogin: { userInfo },
     } = getState()
@@ -87,15 +89,15 @@ export const listPresupuestoDetails = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     }
-    const { data } = await axios.get(`/api/presupuestos/${id}`, config)
+    const { data } = await axios.get(`/api/invoices/${id}`, config)
     console.log(data)
     dispatch({
-      type: PRESUPUESTO_DETAILS_SUCCESS,
+      type: INVOICE_DETAILS_SUCCESS,
       payload: data,
     })
   } catch (error) {
     dispatch({
-      type: PRESUPUESTO_DETAILS_FAIL,
+      type: INVOICE_DETAILS_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
@@ -104,10 +106,10 @@ export const listPresupuestoDetails = (id) => async (dispatch, getState) => {
   }
 }
 
-export const createPresupuesto = (productData) => async (dispatch, getState) => {
+export const createInvoice = (productData) => async (dispatch, getState) => {
   try {
     dispatch({
-      type: PRESUPUESTO_CREATE_REQUEST,
+      type: INVOICE_CREATE_REQUEST,
     })
 
     const {
@@ -120,10 +122,10 @@ export const createPresupuesto = (productData) => async (dispatch, getState) => 
       },
     }
 
-    const { data } = await axios.post(`/api/presupuestos`, productData, config)
+    const { data } = await axios.post(`/api/invoices`, productData, config)
 
     dispatch({
-      type: PRESUPUESTO_CREATE_SUCCESS,
+      type: INVOICE_CREATE_SUCCESS,
       payload: data,
     })
   } catch (error) {
@@ -135,16 +137,16 @@ export const createPresupuesto = (productData) => async (dispatch, getState) => 
       dispatch(logout())
     }
     dispatch({
-      type: PRESUPUESTO_CREATE_FAIL,
+      type: INVOICE_CREATE_FAIL,
       payload: message,
     })
   }
 }
 
-export const updatePresupuesto = (presupuesto) => async (dispatch, getState) => {
+export const updateInvoice = (presupuesto) => async (dispatch, getState) => {
   try {
     dispatch({
-      type: PRESUPUESTO_UPDATE_REQUEST,
+      type: INVOICE_UPDATE_REQUEST,
     })
 
     const {
@@ -159,18 +161,18 @@ export const updatePresupuesto = (presupuesto) => async (dispatch, getState) => 
     }
 
     const { data } = await axios.put(
-      `/api/presupuestos/${presupuesto._id}`,
+      `/api/invoices/${presupuesto._id}`,
       presupuesto,
       config
     )
 
  /*    console.log(data) */
     dispatch({
-      type: PRESUPUESTO_UPDATE_SUCCESS,
+      type: INVOICE_UPDATE_SUCCESS,
       payload: data,
     })
-    /* dispatch({ type: PRESUPUESTO_DETAILS_SUCCESS, payload: data }) */
-  /*   dispatch({ type: 'PRESUPUESTO_DETAILS_RESET' }) */
+    /* dispatch({ type: INVOICE_DETAILS_SUCCESS, payload: data }) */
+  /*   dispatch({ type: 'INVOICE_DETAILS_RESET' }) */
   } catch (error) {
     const message =
       error.response && error.response.data.message
@@ -180,16 +182,16 @@ export const updatePresupuesto = (presupuesto) => async (dispatch, getState) => 
       dispatch(logout())
     }
     dispatch({
-      type: PRESUPUESTO_UPDATE_FAIL,
+      type: INVOICE_UPDATE_FAIL,
       payload: message,
     })
   }
 }
 
-export const deletePresupuesto = (id) => async (dispatch, getState) => {
+export const deleteInvoice = (id) => async (dispatch, getState) => {
   try {
     dispatch({
-      type: PRESUPUESTO_DELETE_REQUEST,
+      type: INVOICE_DELETE_REQUEST,
     })
 
     const {
@@ -204,12 +206,12 @@ export const deletePresupuesto = (id) => async (dispatch, getState) => {
     }
 
     const { data } = await axios.delete(
-      `/api/presupuestos/${id}`,
+      `/api/invoices/${id}`,
       config,
     )
 
     dispatch({
-      type: PRESUPUESTO_DELETE_SUCCESS,
+      type: INVOICE_DELETE_SUCCESS,
       payload: data,
     })
 
@@ -222,7 +224,7 @@ export const deletePresupuesto = (id) => async (dispatch, getState) => {
       dispatch(logout())
     }
     dispatch({
-      type: PRESUPUESTO_DELETE_FAIL,
+      type: INVOICE_DELETE_FAIL,
       payload: message,
     })
   }

@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import MainLayout from '../layouts/MainLayout'
-import { listPresupuestos, deletePresupuesto } from '../actions/presupuestoActions'
+import { listInvoices, deleteInvoice } from '../actions/invoiceActions'
 import InlineLoader from '../components/InlineLoader'
 import Paginate from '../components/Paginate'
 import { Form, Button, Table, ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
-const PresupuestosListScreen = ({ history, match }) => {
+const InvoicesListScreen = ({ history, match }) => {
   const keyword = match.params.keyword
 
   const pageNumber = match.params.pageNumber || 1
 
   const dispatch = useDispatch()
-  const presupuestoList = useSelector(state => state.presupuestoList)
-  const { loading, error, presupuestos, page, pages } = presupuestoList
+  const invoiceList = useSelector(state => state.invoiceList)
+  const { loading, error, invoices, page, pages } = invoiceList
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -25,7 +25,7 @@ const PresupuestosListScreen = ({ history, match }) => {
     e.preventDefault()
     if (formKeyword.trim()) {
 
-      history.replace(`/presupuestos/search/${formKeyword}`)
+      history.replace(`/invoices/search/${formKeyword}`)
     } else {
       history.push('/')
     }
@@ -33,12 +33,12 @@ const PresupuestosListScreen = ({ history, match }) => {
 
   const handleDelete = (e, id) => {
     e.preventDefault()
-    dispatch(deletePresupuesto(id))
+    dispatch(deleteInvoice(id))
     history.go(0)
   }
 
   useEffect(() => {
-    dispatch(listPresupuestos(keyword, pageNumber))
+    dispatch(listInvoices(keyword, pageNumber))
     if (!userInfo || !userInfo.isAdmin) {
       history.push('/login')
     }
@@ -53,14 +53,14 @@ const PresupuestosListScreen = ({ history, match }) => {
           <div className="px-4 py-3 border rounded-xl bg-white mb-2">
               <Form onSubmit={submitHandler}>
                 <div className="d-flex">
-                  <Form.Control type="text" onChange={(e)=>setFormKeyword(e.target.value)} placeholder="Buscar en presupuestos" className="mr-sm-2"></Form.Control>
+                  <Form.Control type="text" onChange={(e)=>setFormKeyword(e.target.value)} placeholder="Buscar en invoices" className="mr-sm-2"></Form.Control>
                   <Button type="submit" size="sm" variant="outline-primary" to={`/search/${formKeyword}`}>Buscar</Button>
                 </div>
               </Form>
-              {keyword && <p className="m-0 p-0 mt-2">Mostrando presupuestos relacionados con <span className="text-primary">"{keyword}"</span></p>}
+              {keyword && <p className="m-0 p-0 mt-2">Mostrando invoices relacionados con <span className="text-primary">"{keyword}"</span></p>}
           </div>
           {
-            presupuestos.length > 0 ?
+             invoices.length > 0 ?
             <div className="pt-2 border rounded-xl main-container">
             <div className="m-4">
               <Table striped bordered hover size="sm">
@@ -74,16 +74,16 @@ const PresupuestosListScreen = ({ history, match }) => {
                   </tr>
                 </thead>
                 <tbody>
-                    {presupuestos.map((p, index) => (
-                        <tr>
+                    {invoices.map((p, index) => (
+                        <tr key={'asd'+index}>
                           <td>{index + 1}</td>
                           <td>{p.cliente.name}</td>
                           <td>{p.state}</td>
                           <td>$ {p.total}</td>
                           <td>
                           <ButtonGroup>
-                            <Link to={`/presupuesto/edit/${p._id}`} className="btn btn-primary">Editar</Link>
-                            <a className="btn btn-primary" target="_blank" href={`/presupuesto/${p._id}`}>Ver / Descargar</a>
+                            <Link to={`/invoice/edit/${p._id}`} className="btn btn-primary">Editar</Link>
+                            <a className="btn btn-primary" target="_blank" href={`/invoice/${p._id}`}>Ver / Descargar</a>
                             <DropdownButton as={ButtonGroup} title="Enviar" id="bg-nested-dropdown">
                               <Dropdown.Item eventKey="1">Enviar por correo</Dropdown.Item>
                               <Dropdown.Item eventKey="2">Enviar por whatsapp</Dropdown.Item>
@@ -105,7 +105,7 @@ const PresupuestosListScreen = ({ history, match }) => {
             </div>
           </div>
           :
-          <p className="p-4 bg-white border rounded-xl shadow-md">No se encontraron presupuestos en el sistema.</p>
+          <p className="p-4 bg-white border rounded-xl shadow-md">No se encontraron invoices en el sistema.</p>
           }
 
         </div>
@@ -114,4 +114,4 @@ const PresupuestosListScreen = ({ history, match }) => {
   )
 }
 
-export default PresupuestosListScreen
+export default InvoicesListScreen

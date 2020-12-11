@@ -1,0 +1,39 @@
+Productos:
+    Crear producto                              READY || TODO -> revisar mensajes de error
+    Editar producto                             READY
+    Mostrar productos                           READY
+    Eliminar producto                           READY
+    Producto no encontrado                      READY
+    subir imagen para productos                 PENDIENTE -> google photos api
+
+Presupuestos:
+    Crear presupuesto                           READY
+    Editar presupuesto                          READY
+    Mostrar presupuestos | generar pdf          READY
+    Eliminar presupuesto                        READY
+    Presupuesto no encontrado                   READY
+    Borrar presupuesto                          READY
+    SearchBar presupuesto                       BUG -> caso "test"
+
+    lo del id                                   PENDIENTE
+    lo de pendiente -> factura                  PENDIENTE
+    lo del IVA                                  PENDIENTE
+
+SearchBar:
+    búsqueda por nombre                         READY
+    búsqueda por sku                            READY
+    búsqueda por tag                            READY
+
+Paginación:
+    ir a primera página                         READY
+    ir a página anterior                        READY
+    mostrar página actual                       READY
+    ir a página siguiente                       READY
+    ir a la última página                       READY
+
+pendiente:
+Crear y Editar Notas De Entrega
+Panel de administración para Super Usuario
+Subir productos en lote por medio de csv
+Funcionalidades de envío de correos y whatsapp via whatsapp web
+Versión Móvil

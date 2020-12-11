@@ -11,7 +11,7 @@ const Searchbar = ({ history, params, keyword }) => {
     e.preventDefault()
     const url = `/search/${formKeyword}?keyName=${keyName}`
     if (formKeyword.trim()) {
-      history.push(url)
+      history.replace(url)
     } else {
       history.push('/')
     }

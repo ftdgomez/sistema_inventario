@@ -3,15 +3,15 @@ import { Col, Row, Form, Button, Container, Spinner, Table} from 'react-bootstra
 import MainLayout from '../layouts/MainLayout'
 import { useDispatch, useSelector } from 'react-redux'
 import { listProducts, resetListProducts } from '../actions/productActions'
-import PresupuestoProductList from '../components/PresupuestoProductList'
-import { createPresupuesto, listPresupuestoDetails, updatePresupuesto } from '../actions/presupuestoActions'
+import InvoiceProductList from '../components/InvoiceProductList'
+import { createInvoice, listInvoiceDetails, updateInvoice } from '../actions/invoiceActions'
 import { Link } from 'react-router-dom'
 
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 
-const CreatePresupuesto = ({ history, match}) => {
+const CreateInvoice = ({ history, match}) => {
   const dispatch = useDispatch()
 
   const productList = useSelector((state) => state.productList)
@@ -20,11 +20,11 @@ const CreatePresupuesto = ({ history, match}) => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  const presupuestoCreate = useSelector((state) => state.presupuestoCreate )
+  const invoiceCreate = useSelector((state) => state.invoiceCreate )
 
-  const presupuestoDetails = useSelector(state => state.presupuestoDetails)
+  const invoiceDetails = useSelector(state => state.invoiceDetails)
 
-  const presupuestoUpdate = useSelector(state => state.presupuestoUpdate)
+  const invoiceUpdate = useSelector(state => state.invoiceUpdate)
 
   const idEdit = match.params.id
 
@@ -44,7 +44,7 @@ const CreatePresupuesto = ({ history, match}) => {
     setDate(new Date())
     setProductos([])
     setFilterText('')
-    dispatch({ type: 'PRESUPUESTO_DETAILS_RESET' })
+    dispatch({ type: 'INVOICE_DETAILS_RESET' })
   }
 
   const handleItemChange = (e, index, key, value) => {
@@ -78,28 +78,28 @@ const CreatePresupuesto = ({ history, match}) => {
     dispatch(listProducts('','', -1))
     if (idEdit)
     {
-      dispatch(listPresupuestoDetails(idEdit))
+      dispatch(listInvoiceDetails(idEdit))
     }
   }, [])
 
   useEffect(()=> {
 
-    if (presupuestoDetails.success)
+    if (invoiceDetails.success)
     {
-      const {cliente, items, valido_hasta} = presupuestoDetails.presupuesto
+      const {cliente, items, valido_hasta} = invoiceDetails.invoices
       setClientName(cliente.name)
       setEmail(cliente.email)
       setPhone(cliente.phone)
       setItems(items)
       setDate(new Date(valido_hasta))
     }
-  }, [presupuestoDetails, dispatch])
+  }, [invoiceDetails, dispatch])
 
   /* clean details and list product on unmount*/
   useEffect(()=> {
     return function cleanup(){
       console.log('unmount')
-      dispatch({type: 'PRESUPUESTO_DETAILS_RESET'})
+      dispatch({type: 'INVOICE_DETAILS_RESET'})
       dispatch(resetListProducts())
     }
   }, [])
@@ -135,24 +135,24 @@ const CreatePresupuesto = ({ history, match}) => {
         items: items.map(el => ({qty: el.qty, product: el.product._id, variant: el.variant})),
         total: items.reduce((acc, el) => acc += (el.qty * el.variant.sellPrice), 0),
         state: 'pendiente',
-        valido_hasta: xdate
+        pagado_at: xdate
       }
       if (!idEdit)
       {
-        dispatch(createPresupuesto(data))
-        if (presupuestoCreate.success)
+        dispatch(createInvoice(data))
+        if (invoiceCreate.success)
         {
-          toast.success('Presupuesto creado con éxito!')
+          toast.success('Invoice creado con éxito!')
         }
       }
       else
       {
         data._id = idEdit
-        dispatch(updatePresupuesto(data))
-        if (presupuestoUpdate.success)
+        dispatch(updateInvoice(data))
+        if (invoiceUpdate.success)
         {
-          toast.success('Presupuesto actualizado con éxito!')
-          history.push('/presupuestos')
+          toast.success('Invoice actualizado con éxito!')
+          history.push('/invoices')
         }
       }
     }
@@ -166,11 +166,11 @@ const CreatePresupuesto = ({ history, match}) => {
     <MainLayout>
         <div style={{height: '97vh', overflowY: 'auto'}} className="main-container bg-transparent">
           <div className="border-bottom d-flex align-items-center mb-4 p-4">
-            <Link to="/presupuestos" className='btn btn-light border my-3 bg-white'>
+            <Link to="/invoices" className='btn btn-light border my-3 bg-white'>
               {'<'}
             </Link>
             <header className="ml-2 pt-2">
-            <h4>{idEdit ? 'Editar ' : 'Generar '} Presupuesto</h4>
+            <h4>{idEdit ? 'Editar ' : 'Generar '} Invoice</h4>
             </header>
           </div>
           <Container fluid >
@@ -200,7 +200,7 @@ const CreatePresupuesto = ({ history, match}) => {
 
                 <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
                       <h4><small>Items ({items.length})</small></h4>
-                      {items.length < 1 && <p>Utilice el filtrado de productos para empezar agregar items a este presupuesto.</p>}
+                      {items.length < 1 && <p>Utilice el filtrado de productos para empezar agregar items a este invoice.</p>}
                       <Table striped bordered hover size="sm">
                         <thead>
                           <tr>
@@ -230,41 +230,9 @@ const CreatePresupuesto = ({ history, match}) => {
                             ))
                           }
                         </tbody>
-{/*                         {
-                          items.map((v, index) => (
-                            <Form.Row className="mb-2" key={`ref-item-${index}`}>
-                                <Col sm={4}>
-                                  {index === 0 && <Form.Label>Nombre producto</Form.Label>}
-                                  <p><small>{v.name}</small></p>
-                                </Col>
-                                <Col sm={2}>
-                                  <Form.Label>Cantidad</Form.Label>
-                                  <Form.Control onChange={(e)=>handleItemChange(e, index, 'qty')} placeholder="Cantidad" value={v.qty} />
-                                </Col>
-                                {
-                                  v.variants.length > 1 ?
-                                  <Col>
-                                        {index === 0 && <Form.Label>Precio Unidad</Form.Label>}
-                                        <Form.Control onChange={(e)=>handleItemChange(e, index, 'variants', [{ref: e.target.value.split('->')[0].trim(), sellPrice: Number(e.target.value.split('->')[1].trim().substring(1))}])} as="select">
-                                          {v.variants.map((variant)=><option key={variant.ref+'123'}>{`${variant.ref} -> $${variant.sellPrice}`}</option>)}
-                                        </Form.Control>
-                                  </Col>
-                                  :
-                                  <Col>
-                                    {index === 0 && <Form.Label>Precio Unidad</Form.Label>}
-                                    <p className="form-control">Precio único: ${v.variants[0].sellPrice}</p>
-                                  </Col>
-
-                                }
-                                <Col sm={1}>
-                                   <Button style={{marginTop: '2em'}} onClick={()=>setItems(items.filter((items, i) => i !== index))} variant="danger">x</Button>
-                                </Col>
-                            </Form.Row>
-                          ))
-                        } */}
                       </Table>
                 </div>
-                <Button className="mb-4 btn-block" type="submit" variant="primary">{idEdit ? 'Actualizar' : 'Crear'} Presupuesto</Button>
+                <Button className="mb-4 btn-block" type="submit" variant="primary">{idEdit ? 'Actualizar' : 'Crear'} Invoice</Button>
                 </Form>
             </Col>
             <Col sm={12} md={6}>
@@ -286,7 +254,7 @@ const CreatePresupuesto = ({ history, match}) => {
                       }
                     </div>
                   </div>
-                  { productos && <PresupuestoProductList products={productos} items={items} setItems={setItems} /> }
+                  { productos && <InvoiceProductList products={productos} items={items} setItems={setItems} /> }
                 </div>
               }
             </Col>
@@ -297,4 +265,4 @@ const CreatePresupuesto = ({ history, match}) => {
   )
 }
 
-export default CreatePresupuesto
+export default CreateInvoice

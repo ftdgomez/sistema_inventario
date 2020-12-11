@@ -22,7 +22,6 @@ const ProductList = ({products}) => {
   return (
     <div className="product-list">
       <header className="product-list-header product-list-grid">
-        <div>#</div>
         <div>Img</div>
         <div>Sku</div>
         <div>Nombre</div>
@@ -33,11 +32,6 @@ const ProductList = ({products}) => {
       {products.map(product => (
         <div key={product._id}>
           <div className="product-item product-list-grid">
-            <Form>
-              <Form.Group controlId="formBasicCheckbox">
-                <Form.Check type="checkbox" />
-              </Form.Group>
-            </Form>
             <img src={product.img ? product.img[0] : defaultImg } alt="" style={{height: '50px', width: '50px'}} />
             <span>{product.sku}</span>
             <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>

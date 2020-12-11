@@ -7,11 +7,12 @@ import ProductHandler from './screens/ProductHandler';
 import EditProduct from './screens/EditProduct';
 import CreatePresupuesto from './screens/CreatePresupuesto';
 import PresupuestosListScreen from './screens/PresupuestosListScreen';
-import CrearNotaDeEntrega from './screens/CrearNotaDeEntrega'
-import NotasDeEntregaListScreen from './screens/NotaDeEntregaListScreen';
+import InvoiceListScreen from './screens/InvoiceListScreen';
 import TiendasList from './screens/TiendasList';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PdfGenerator from './screens/PdfGenerator';
+import CreateInvoice from './screens/CreateInvoice';
 
 function App() {
   return (
@@ -33,10 +34,7 @@ function App() {
           
           <Route path='/presupuesto/create' component={CreatePresupuesto} exact />
           <Route path='/presupuesto/edit/:id' component={CreatePresupuesto} exact />
-
-          <Route path='/nota-de-entrega/create' component={CrearNotaDeEntrega} exact />
-
-
+          <Route path='/presupuesto/:id' component={PdfGenerator} exact />
           <Route path='/presupuestos' component={PresupuestosListScreen} exact />
           <Route path='/presupuestos/search/:keyword' component={PresupuestosListScreen} exact />
           <Route path='/presupuestos/page/:pageNumber' component={PresupuestosListScreen} exact />
@@ -46,14 +44,18 @@ function App() {
             exact
           />
 
-          <Route path='/nota-de-entrega' component={NotasDeEntregaListScreen} exact />
-          <Route path='/nota-de-entrega/search/:keyword' component={NotasDeEntregaListScreen} exact />
-          <Route path='/nota-de-entrega/page/:pageNumber' component={NotasDeEntregaListScreen} exact />
+          <Route path='/invoice/create' component={CreateInvoice} exact />
+          <Route path='/invoice/edit/:id' component={CreateInvoice} exact />
+          <Route path='/invoice/:id' component={PdfGenerator} exact />
+          <Route path='/invoices' component={InvoiceListScreen} exact />
+          <Route path='/invoices/search/:keyword' component={InvoiceListScreen} exact />
+          <Route path='/invoices/page/:pageNumber' component={InvoiceListScreen} exact />
           <Route
-            path='/nota-de-entrega/search/:keyword/page/:pageNumber'
-            component={PresupuestosListScreen}
+            path='/presupuestos/search/:keyword/page/:pageNumber'
+            component={InvoiceListScreen}
             exact
           />
+
 
           <Route path="/tiendas" component={TiendasList} />
 

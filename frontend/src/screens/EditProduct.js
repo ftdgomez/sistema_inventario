@@ -1,11 +1,12 @@
 import React, { useState, useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
-import { listProductDetails, updateProduct } from '../actions/productActions'
+import { listProductDetails, updateProduct, deleteProduct} from '../actions/productActions'
 import MainLayout from '../layouts/MainLayout'
-import { Form, Col, Button, Toast } from 'react-bootstrap'
+import { Form, Col, Button, Modal } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import Loader from '../components/Loader'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
+import { toast } from 'react-toastify'
 
 const EditProduct = ({ match, history }) => {
 
@@ -15,6 +16,10 @@ const EditProduct = ({ match, history }) => {
   const [description, setDescription] = useState('')
   const [tagsStr, setTags] = useState('')
   const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const handleItemChange = (e, index, key, value) => {
     let tempArr = []
@@ -45,13 +50,15 @@ const EditProduct = ({ match, history }) => {
     success: successUpdate,
   } = productUpdate
 
+  const productDelete = useSelector(state => state.productDelete)
+
 
   useEffect(() => {
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET })
       history.push('/')
     } 
-    else
+    if (product)
     {
       if (!product.name){
         dispatch(listProductDetails(productId))
@@ -81,10 +88,35 @@ const EditProduct = ({ match, history }) => {
     )
   }
 
+  const handleDelete = async () => {
+    const e = await dispatch(deleteProduct(productId))
+    if (e)
+    {
+      history.push('/')
+    }
+    else
+    {
+      toast.error(`Parece que ha ocurrido un error.`)
+    }
+  }
+
   if (loading)
   {
     return <Loader />
   }
+  else if (!product)
+  {
+    return (
+      <MainLayout>
+        <div className="min-vh-100 bg-white p-4 d-flex align-items-center justify-content-center">
+          <div>
+            Producto no encontrado
+          </div>
+        </div>
+      </MainLayout>)
+  }
+  else
+  {
   return (
       <MainLayout>
         <div style={{height: '97vh', overflowY: 'auto'}} className="main-container bg-transparent">
@@ -155,11 +187,32 @@ const EditProduct = ({ match, history }) => {
                   <Button onClick={()=>setVariants([...variants, {ref: '', sellPrice: '', countInStock: ''}])} className="mt-4"><i className="im im-plus mr-2" style={{fontSize: '12px'}}></i>Agregar Variante</Button>
                 </div>
           </div>
-          <Button className="mb-4" type="submit" variant="primary" size="sm">Actualizar Producto</Button>
+          <Button className="mb-4 btn-block" type="submit" variant="primary">Actualizar Producto</Button>
+                <Button variant="danger" className="btn-block" onClick={handleShow}>
+                  Eliminar Producto
+                </Button>
+
+                <Modal show={show} onHide={handleClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Eliminar Producto</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    Estas a punto de elimiar <strong className="text-danger">{name}.</strong>
+                    <p>¿Estás usted seguro?</p>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                      No, volver atrás.
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete}>
+                      Sí. Eliminar Producto.
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
         </Form>
         </div>
       </MainLayout>
-  )
+  )}
 }
 
 export default EditProduct

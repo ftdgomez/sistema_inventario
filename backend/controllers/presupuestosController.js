@@ -8,7 +8,7 @@ export const getPresupuestos = asyncHandler(async (req, res) => {
   const page = Number(req.query.pageNumber) || 1
   const keyword = req.query.keyword
     ? {
-        cliente: {
+        ['cliente.name']: {
           $regex: req.query.keyword,
           $options: 'i',
         },
@@ -33,7 +33,9 @@ export const getPresupuestos = asyncHandler(async (req, res) => {
 
 
 export const getOnePresupuesto = asyncHandler(async (req, res) => {
-  const presupuesto = await Presupuesto.findOne({ _id: req.params.id}).populate('products')
+  const presupuesto = await Presupuesto.findOne({ _id: req.params.id})
+                                       .populate('items.product')
+                                       .populate('store')
   if (presupuesto)
   {
     res.json(presupuesto)
@@ -58,36 +60,35 @@ export const createPresupuesto = asyncHandler(async (req, res) => {
   }
 })
 
-/* export const updateProduct = asyncHandler(async (req, res) => {
-  const {
-    tags,
-    store,
-    name,
-    brand,
-    description,
-    variants,
-    categories
-  } = req.body
+export const updatePresupuesto = asyncHandler(async (req, res) => {
 
-  const product = await Product.findById(req.params.id)
+  let presupuesto = await Presupuesto.findById(req.params.id)
+  console.log(req.body)
+  if (presupuesto) {
+    const {
+      cliente,
+      store,
+      items,
+      state,
+      valido_hasta,
+      total
+    } = req.body
+    presupuesto.cliente = cliente
+    presupuesto.store = store
+    presupuesto.items = items
+    presupuesto.state = state
+    presupuesto.valido_hasta = valido_hasta
+    presupuesto.total = total
 
-  if (product) {
-    product.tags =  tags
-    product.store = store
-    product.name =  name
-    product.brand = brand
-    product.description = description
-    product.variants =  variants  
-    product.categories = categories
-
-    const updatedProduct = await product.save()
-    res.json(updatedProduct)
+    /* res.json(presupuesto) */
+    const updatedP = await presupuesto.save() 
+    res.json(updatedP)
   } else {
     res.status(404)
-    throw new Error('Product not found')
+    throw new Error('Presupuesto not found')
   }
 })
- */
+ 
 
 
 export const deletePresupuesto = asyncHandler(async (req, res) => {

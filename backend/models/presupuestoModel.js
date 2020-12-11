@@ -23,11 +23,7 @@ const presupuestoSchema  = mongoose.Schema({
         ref: 'Product',
         required: false
       },
-      variantRef: { type: String },
-      totalPrice: {
-        type: Number,
-        required: true
-      }
+      variant: { type: Object },
     }
   ],
   total: {
@@ -44,7 +40,7 @@ const presupuestoSchema  = mongoose.Schema({
   }
 }, 
 {
-timestamp: true
+timeStamp: true
 }
 )
 

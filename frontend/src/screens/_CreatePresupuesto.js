@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import { Col, Row, Form, Button, Container, Spinner, Table} from 'react-bootstrap'
+import { Col, Row, Form, Button, Container, Spinner} from 'react-bootstrap'
 import MainLayout from '../layouts/MainLayout'
 import { useDispatch, useSelector } from 'react-redux'
 import { listProducts, resetListProducts } from '../actions/productActions'
 import PresupuestoProductList from '../components/PresupuestoProductList'
 import { createPresupuesto, listPresupuestoDetails, updatePresupuesto } from '../actions/presupuestoActions'
 import { Link } from 'react-router-dom'
-
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
@@ -15,7 +14,7 @@ const CreatePresupuesto = ({ history, match}) => {
   const dispatch = useDispatch()
 
   const productList = useSelector((state) => state.productList)
-  const {products} = productList
+  const { products  } = productList
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -23,12 +22,13 @@ const CreatePresupuesto = ({ history, match}) => {
   const presupuestoCreate = useSelector((state) => state.presupuestoCreate )
 
   const presupuestoDetails = useSelector(state => state.presupuestoDetails)
+  const {presupuesto} = presupuestoDetails
 
   const presupuestoUpdate = useSelector(state => state.presupuestoUpdate)
 
   const idEdit = match.params.id
 
-  const [clientName, setClientName] = useState('')
+  const [cliente, setCliente] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [items, setItems] = useState([])
@@ -36,16 +36,6 @@ const CreatePresupuesto = ({ history, match}) => {
 
   const [productos, setProductos] = useState([])
   const [filterText, setFilterText] = useState('')
-
-  const cleanInterface = () => {
-    setClientName('')
-    setEmail('')
-    setItems([])
-    setDate(new Date())
-    setProductos([])
-    setFilterText('')
-    dispatch({ type: 'PRESUPUESTO_DETAILS_RESET' })
-  }
 
   const handleItemChange = (e, index, key, value) => {
     let tempArr = []
@@ -56,44 +46,59 @@ const CreatePresupuesto = ({ history, match}) => {
       }
       else
       {
-        tempArr.push({...el, [key]: value ? value : JSON.parse(e.target.value)})
+        tempArr.push({...el, [key]: value ? value : e.target.value})
       }
     });
     setItems(tempArr)
   }
 
-  useEffect(()=> {
-    console.log(items)  
-  }, [items, dispatch])
-
-  /* handle the user info */
   useEffect(() => {  
     if (!userInfo || !userInfo.isAdmin) {
       history.push('/login')
     }
-  }, [userInfo])
+    if (presupuestoCreate.success && productos.length > 0)
+    {
+      setCliente('')
+      setEmail('')
+      setPhone('')
+      setItems([])
+      setDate(new Date());
+      setFilterText('')
+      setProductos([])
+    }
+    if (presupuestoDetails.success)
+    {
+      setCliente(presupuesto.cliente.name)
+      setEmail(presupuesto.cliente.email)
+      setPhone(presupuesto.cliente.phone)
+      setItems(presupuesto.items.map(item => ({
+        id: item._id,
+        qty: item.qty,
+        name: item.product.name,
+        variants: item.product.variants,
+        product: item.product
+      })))
+      setDate(new Date(presupuesto.valido_hasta))
+    }
+  }, [
+    dispatch,
+    userInfo,
+    productos,
+    presupuestoCreate.success,
+    presupuestoDetails.success,
+    presupuestoUpdate.presupuesto,
+    presupuesto])
 
   /* Populate listProduct on Mount */
   useEffect(()=> {
+    console.log('Populate listProduct on mount!!!')
     dispatch(listProducts('','', -1))
     if (idEdit)
     {
+      console.log('populate presupuesto details on mount!!!')
       dispatch(listPresupuestoDetails(idEdit))
     }
   }, [])
-
-  useEffect(()=> {
-
-    if (presupuestoDetails.success)
-    {
-      const {cliente, items, valido_hasta} = presupuestoDetails.presupuesto
-      setClientName(cliente.name)
-      setEmail(cliente.email)
-      setPhone(cliente.phone)
-      setItems(items)
-      setDate(new Date(valido_hasta))
-    }
-  }, [presupuestoDetails, dispatch])
 
   /* clean details and list product on unmount*/
   useEffect(()=> {
@@ -121,38 +126,54 @@ const CreatePresupuesto = ({ history, match}) => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleCreatePresupuesto = (e) => {
     e.preventDefault()
-    if ( clientName !== '' && email !== '' && phone !== '' && items.length > 0)
+    if (
+      cliente !== ''
+      && email !== ''
+      && phone !== ''
+      && items.length > 0
+      )
     {
+      const itms = items.map((el) => ({
+        _id: el.id,
+        qty: el.qty,
+        product: el.product._id,
+        variantRef: el.variants[0].ref,
+        totalPrice: el.qty * el.variants[0].sellPrice
+      }))
+
       let data = {
-        cliente: {
-          name: clientName,
+        cliente:{
+          name: cliente,
           email: email,
           phone: phone
         },
         store: userInfo._id,
-        items: items.map(el => ({qty: el.qty, product: el.product._id, variant: el.variant})),
-        total: items.reduce((acc, el) => acc += (el.qty * el.variant.sellPrice), 0),
+        items: itms,
         state: 'pendiente',
-        valido_hasta: xdate
+        valido_hasta: xdate,
+        total: itms.reduce( (total, num ) => total + num.totalPrice, 0)
       }
-      if (!idEdit)
+      if (idEdit)
       {
-        dispatch(createPresupuesto(data))
-        if (presupuestoCreate.success)
+        data._id = presupuesto._id
+        dispatch(updatePresupuesto(data))
+        if (presupuestoUpdate.success)
         {
-          toast.success('Presupuesto creado con éxito!')
+          history.push('/presupuestos')
         }
       }
       else
       {
-        data._id = idEdit
-        dispatch(updatePresupuesto(data))
-        if (presupuestoUpdate.success)
+        dispatch(createPresupuesto(data))
+        if (presupuestoCreate.error)
         {
-          toast.success('Presupuesto actualizado con éxito!')
-          history.push('/presupuestos')
+          toast.error(`Parece que ha ocurrido un error: ${presupuestoCreate.error}`)
+        }
+        else if (presupuestoCreate.success)
+        {
+          toast.success('Bien! presupuesto creado con éxito.')
         }
       }
     }
@@ -176,12 +197,12 @@ const CreatePresupuesto = ({ history, match}) => {
           <Container fluid >
           <Row>
             <Col sm={12} md={6}>
-              <Form onSubmit={handleSubmit} className="px-4">
+              <Form onSubmit={handleCreatePresupuesto} className="px-4">
                 <Form.Row className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
                   <Col sm={12}><h4><small>Datos De Cliente</small></h4></Col>
                   <Col md={7}>
                     <p><small>Nombre del cliente</small></p>
-                    <Form.Control onChange={(e)=> setClientName(e.target.value)} value={clientName} placeholder="Nombre cliente" />
+                    <Form.Control onChange={(e)=> setCliente(e.target.value)} value={cliente} placeholder="Nombre cliente" />
                   </Col>
                   <Col>
                     <p><small>Teléfono</small></p>
@@ -199,38 +220,10 @@ const CreatePresupuesto = ({ history, match}) => {
                 </div>
 
                 <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
-                      <h4><small>Items ({items.length})</small></h4>
+                      <h4><small>Items</small></h4>
                       {items.length < 1 && <p>Utilice el filtrado de productos para empezar agregar items a este presupuesto.</p>}
-                      <Table striped bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>Nombre Producto</th>
-                            <th>Cantidad</th>
-                            <th>Variante</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {
-                            items.map((item, index) => (
-                              <tr key={item.product._id+index}>
-                                <td>{item.product.name}</td>
-                                <td>
-                                  <Form.Control type="number" value={item.qty} onChange={(e)=>handleItemChange(e, index, 'qty', Number(e.target.value) )} />
-                                </td>
-                                <td>
-                                  <Form.Control onChange={(e)=>handleItemChange(e, index, 'variant')} as="select">
-                                    {item.product.variants.map((variant)=><option value={JSON.stringify(variant)} key={variant.ref+'123'}>{`${variant.ref} -> $${variant.sellPrice}`}</option>)}
-                                  </Form.Control> 
-                                </td>
-                                <td align="center">
-                                  <Button variant="danger" onClick={()=>setItems(items.filter((i, xindex) => xindex !== index))}>x</Button>
-                                </td>
-                              </tr>
-                            ))
-                          }
-                        </tbody>
-{/*                         {
+                      <div>
+                        {
                           items.map((v, index) => (
                             <Form.Row className="mb-2" key={`ref-item-${index}`}>
                                 <Col sm={4}>
@@ -261,8 +254,8 @@ const CreatePresupuesto = ({ history, match}) => {
                                 </Col>
                             </Form.Row>
                           ))
-                        } */}
-                      </Table>
+                        }
+                      </div>
                 </div>
                 <Button className="mb-4 btn-block" type="submit" variant="primary">{idEdit ? 'Actualizar' : 'Crear'} Presupuesto</Button>
                 </Form>

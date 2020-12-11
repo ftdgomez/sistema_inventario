@@ -1,8 +1,10 @@
 import mongoose from 'mongoose'
 
-const invoiceModel  = mongoose.Schema({
+const invoiceSchema  = mongoose.Schema({
   cliente: {
-    type: String,
+    name: { type: String, required: true },
+    email: { type: String, required: false },
+    phone: { type: String, required: false },
   },
   store: {
     type: mongoose.Schema.Types.ObjectId,
@@ -21,22 +23,27 @@ const invoiceModel  = mongoose.Schema({
         ref: 'Product',
         required: false
       },
-      totalPrice: {
-        type: Number,
-        required: true
-      }
+      variant: { type: Object },
     }
   ],
-  valido_hasta: {
+  total: {
+    type: Number
+  },
+  state: {
+    type: String,
+    enum: ['pendiente', 'pagada', 'pago-parcial'],
+    default: 'pendiente'
+  },
+  pagado_at: {
     type: Date,
     required: true
   }
 }, 
 {
-timestamp: true
+timeStamp: true
 }
 )
 
-const Invoice = mongoose.model('Invoice', presupuestoSchema)
+const Invoice = mongoose.model('Invoice', invoiceSchema)
 
 export default Invoice

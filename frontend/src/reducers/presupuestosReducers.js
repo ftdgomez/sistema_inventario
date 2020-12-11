@@ -93,6 +93,8 @@ export const presupuestoDetailsReducer = (
       return { loading: false, presupuesto: action.payload, success: true }
     case PRESUPUESTO_DETAILS_FAIL:
       return { loading: false, error: action.payload }
+    case 'PRESUPUESTO_DETAILS_RESET':
+      return {loading: true, presupuesto: null}
     default:
       return state
   }
