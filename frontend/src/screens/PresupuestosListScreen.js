@@ -21,8 +21,10 @@ const PresupuestosListScreen = ({ history, match }) => {
   const dataOrigin = useSelector(state => match.params.type === 'presupuestos' ? state.presupuestoList : state.invoiceList)
   const { loading, error, success, page, pages, invoices, presupuestos } = dataOrigin
 
+  const dataDeleted = useSelector(state => match.params.type === 'presupuestos' ? state.presupuestoDelete : state.invoiceDelet)
+
   useEffect(() => {
-    if (!userInfo || !userInfo.isAdmin) {
+    if (!userInfo || !userInfo.isStore) {
       history.push('/login')
     }
     if (dataOrigin.invoices)
@@ -33,12 +35,16 @@ const PresupuestosListScreen = ({ history, match }) => {
     {
       dispatch(listPresupuestos(keyword, pageNumber))
     }
+    if (dataDeleted.success)
+    {
+      history.go(0)
+    }
     return function cleanup()
     {
       dispatch({type: PRESUPUESTO_LIST_RESET})
       dispatch({type: INVOICE_LIST_RESET})
     }
-  }, [dispatch, history, keyword, pageNumber, userInfo, match])
+  }, [dispatch, history, keyword, pageNumber, userInfo, match, dataDeleted.success])
 
 
   const submitHandler = (e) => {
@@ -104,8 +110,12 @@ const PresupuestosListScreen = ({ history, match }) => {
                             <Link to={`/edit/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}`} className="btn btn-primary">Editar</Link>
                             <a className="btn btn-primary" target="_blank" href={`/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`}>Ver / Descargar</a>
                             <DropdownButton as={ButtonGroup} title="Enviar" id="bg-nested-dropdown">
-                              <Dropdown.Item eventKey="1">Enviar por correo</Dropdown.Item>
-                              <Dropdown.Item eventKey="2">Enviar por whatsapp</Dropdown.Item>
+                              <Dropdown.Item href={`mailto:${p.cliente.email}?subject=${encodeURI(`Su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'}`)}&body=${encodeURI(`Gracias por user nuestros servicios! puede encontrar su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'} en el siguiente link https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`)}`} eventKey="1">
+                                Enviar por correo
+                              </Dropdown.Item>
+                              <Dropdown.Item href={`https://wa.me/58${p.cliente.phone}?text=${encodeURI(`Gracias por user nuestros servicios! puede encontrar su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'} en el siguiente link https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`)}`} eventKey="2">
+                                Enviar por whatsapp
+                              </Dropdown.Item>
                             </DropdownButton>
                             <Button variant="danger" onClick={(e) => handleDelete(e, p._id)}>Eliminar</Button>
                           </ButtonGroup>
@@ -114,6 +124,7 @@ const PresupuestosListScreen = ({ history, match }) => {
                     ))}
               </tbody>
               </Table>
+              {dataOrigin[match.params.type].length < 1 && <p>Parace que no se han creado {match.params.type} en esta tienda.</p>}
             </div>
             <div className="paginate-container">
               <Paginate

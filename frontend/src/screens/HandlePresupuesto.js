@@ -2,15 +2,17 @@ import React, {useState, useEffect} from 'react'
 import { Col, Row, Form, Button, Container, Spinner, Table} from 'react-bootstrap'
 import MainLayout from '../layouts/MainLayout'
 import { useDispatch, useSelector } from 'react-redux'
-import { listProducts, resetListProducts } from '../actions/productActions'
-import PresupuestoProductList from '../components/PresupuestoProductList'
+import { listProducts } from '../actions/productActions'
+
+import { Link } from 'react-router-dom'
+import PresupuestoProductList from '../components/PresupuestoProductList' 
+
 import { createPresupuesto, listPresupuestoDetails, updatePresupuesto } from '../actions/presupuestoActions'
 import { createInvoice, listInvoiceDetails, updateInvoice } from '../actions/invoiceActions'
-import { Link } from 'react-router-dom'
 
+import { toast } from 'react-toastify'; 
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
-import { toast } from 'react-toastify';
 
 const HandlePresupuesto = ({ history, match}) => {
   const dispatch = useDispatch()
@@ -21,36 +23,128 @@ const HandlePresupuesto = ({ history, match}) => {
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
-  const presupuestoCreate = useSelector((state) => state.presupuestoCreate )
-  const presupuestoDetails = useSelector(state => state.presupuestoDetails)
+  // const presupuestoCreate = useSelector((state) => state.presupuestoCreate )
+  // const presupuestoDetails = useSelector(state => state.presupuestoDetails)
   const presupuestoUpdate = useSelector(state => state.presupuestoUpdate)
 
-  const invoiceCreate = useSelector((state) => state.invoiceCreate )
-  const invoiceDetails = useSelector(state => state.invoiceDetails)
+  // const invoiceCreate = useSelector((state) => state.invoiceCreate )
+  // const invoiceDetails = useSelector(state => state.invoiceDetails)
   const invoiceUpdate = useSelector(state => state.invoiceUpdate)
 
-  const idEdit = match.params.id
+  function handleDataOrigin(){
+    if (match.params.id)
+    {
+      // es edit
+      if (match.params.type === 'presupuesto')
+      {
+        return 'presupuestoDetails'
+      }
+      if (match.params.type === 'invoice')
+      {
+        return 'invoiceDetails'
+      }
+    }
+    else
+    {
+      // es create
+      if (match.params.type === 'presupuesto')
+      {
+        return 'presupuestoCreate'
+      }
+      else if (match.params.type === 'invoice')
+      {
+        return 'invoiceCreate'
+      }
+    }
+  }
+
+  const dataOrigin = useSelector(state => state[handleDataOrigin()])
+  const {success, error, invoice, preuspuesto} = dataOrigin
 
   const [clientName, setClientName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [items, setItems] = useState([])
   const [xdate, setDate] = useState(new Date());
-
+  
   const [productos, setProductos] = useState([])
   const [filterText, setFilterText] = useState('')
 
-  const [typeref, setTyperef] = useState('')
+  useEffect(()=> {
+    if (!userInfo || !userInfo.isStore) {
+      history.push('/login')
+    }
+    if (dataOrigin.presupuesto && JSON.stringify(dataOrigin.presupuesto) === '{}')
+    {
+      if (match.params.id)
+      {
+        dispatch(listPresupuestoDetails(match.params.id))
+      }
+    }
+    if (dataOrigin.invoice && JSON.stringify(dataOrigin.invoice) === '{}')
+    {
+      if (match.params.id)
+      {
+        dispatch(listInvoiceDetails(match.params.id))
+      }
+    }
+    if (dataOrigin.presupuesto && dataOrigin.success)
+    {
+      const {cliente, items, valido_hasta} = dataOrigin.presupuesto
+      setClientName(cliente.name)
+      setEmail(cliente.email)
+      setPhone(cliente.phone)
+      setItems(items)
+      setDate(new Date(valido_hasta))
+    }
+    if (dataOrigin.invoice && dataOrigin.success)
+    {
+      const {cliente, items, pagado_at} = dataOrigin.invoice
+      setClientName(cliente.name)
+      setEmail(cliente.email)
+      setPhone(cliente.phone)
+      setItems(items)
+      setDate(new Date(pagado_at))
+    }
+    if (presupuestoUpdate.success)
+    {
+      toast.success('Presupuesto actualizado con éxito!')
+      dispatch({ type: 'PRESUPUESTO_UPDATE_RESET'})
+    }
+    if (presupuestoUpdate.error)
+    {
+      toast.error(presupuestoUpdate.error)
+      dispatch({ type: 'PRESUPUESTO_UPDATE_RESET'})
+    }
+    if (invoiceUpdate.success)
+    {
+      toast.success('Nota de entrega actualizada con éxito!')
+      dispatch({ type: 'INVOICE_UPDATE_RESET'})
+    }
+    if (invoiceUpdate.error)
+    {
+      toast.error(invoiceUpdate.error)
+      dispatch({ type: 'INVOICE_UPDATE_RESET'})
+    }
+    if (dataOrigin.createdInvoice)
+    {
+      toast.success('Nota de entrega creada con éxito!')
+      history.push('/list/invoices')
+      dispatch({ type: 'INVOICE_CREATE_RESET' })
+    }
+    if (dataOrigin.createdPresupuesto)
+    {
+      toast.success('Presupuesto creado con éxito!')
+      history.push('/list/presupuestos')
+      dispatch({ type: 'PRESUPUESTO_CREATE_RESET' })
+    }
 
-  const cleanInterface = () => {
-    setClientName('')
-    setEmail('')
-    setItems([])
-    setDate(new Date())
-    setProductos([])
-    setFilterText('')
-    dispatch({ type: 'PRESUPUESTO_DETAILS_RESET' })
-  }
+  }, [dispatch, history, match, userInfo, dataOrigin.success, presupuestoUpdate.success, presupuestoUpdate.error, invoiceUpdate.success, invoiceUpdate.error,
+    dataOrigin.createdInvoice,dataOrigin.createdPresupueto])
+
+  useEffect(()=>{
+    dispatch(listProducts('','', -1))
+  }, [])
 
   const handleItemChange = (e, index, key, value) => {
     let tempArr = []
@@ -66,87 +160,6 @@ const HandlePresupuesto = ({ history, match}) => {
     });
     setItems(tempArr)
   }
-
-  const cleanup = () => {
-    dispatch({type: 'PRESUPUESTO_DETAILS_RESET'})
-    dispatch(resetListProducts())
-  }
-
-  useEffect(()=> {
-    console.log(items)  
-  }, [items, dispatch])
-
-  /* handle the user info */
-  useEffect(() => {  
-    if (!userInfo || !userInfo.isAdmin) {
-      history.push('/login')
-    }
-  }, [userInfo])
-
-  /* Populate listProduct on Mount */
-  useEffect(()=> {
-    const typeref = match.params.type
-    setTyperef(match.params.type)
-    dispatch(listProducts('','', -1))
-
-    if (idEdit && typeref === 'presupuesto')
-    {
-      dispatch(listPresupuestoDetails(idEdit))
-    }
-    if (idEdit && typeref === 'invoice')
-    {
-      dispatch(listInvoiceDetails(idEdit))
-    }
-  }, [])
-
-  /* clean the componente on history change */
-  useEffect(()=> {
-    cleanup()
-  }, [history])
-
-  useEffect(()=> {
-
-    if (presupuestoDetails.success)
-    {
-      const {cliente, items, valido_hasta} = presupuestoDetails.presupuesto
-      setClientName(cliente.name)
-      setEmail(cliente.email)
-      setPhone(cliente.phone)
-      setItems(items)
-      setDate(new Date(valido_hasta))
-    }
-    if (invoiceDetails.success)
-    {
-      const {cliente, items, pagado_at} = invoiceDetails.invoice
-      setClientName(cliente.name)
-      setEmail(cliente.email)
-      setPhone(cliente.phone)
-      setItems(items)
-      setDate(new Date(pagado_at))
-    }
-  }, [presupuestoDetails, invoiceDetails, dispatch])
-
-  /* show toast */
-  useEffect(()=> {
-    if (presupuestoCreate.success)
-    {
-      toast.success('Presupuesto creado con éxito!')
-      cleanInterface()
-      dispatch({ type: 'PRESUPUESTO_CREATE_RESET' })
-    }
-    if (presupuestoUpdate.success)
-    {
-      toast.success('Presupuesto actualizado con éxito!')
-      history.push('/list/presupuestos')
-      cleanInterface()
-      dispatch({ type: 'PRESUPUESTO_UPDATE_RESET' })
-    }
-  }, presupuestoCreate.success, presupuestoUpdate.success)
-
-  /* clean details and list product on unmount*/
-  useEffect(()=> {
-    return cleanup()
-  }, [])
 
   const handleFilter = (e) => {
     setFilterText(e.target.value.toLowerCase())
@@ -167,9 +180,10 @@ const HandlePresupuesto = ({ history, match}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const idEdit = match.params.id
     if ( clientName !== '' && email !== '' && phone !== '' && items.length > 0)
     {
-      if (typeref === 'presupuesto')
+      if (match.params.type === 'presupuesto')
       {
         let data = {
           cliente: {
@@ -193,7 +207,7 @@ const HandlePresupuesto = ({ history, match}) => {
           dispatch(updatePresupuesto(data))
         }
       }
-      else if (typeref === 'invoice')
+      else if (match.params.type === 'invoice')
       {
         let data = {
           cliente: {
@@ -226,13 +240,13 @@ const HandlePresupuesto = ({ history, match}) => {
 
   return (
     <MainLayout>
-        <div style={{height: '97vh', overflowY: 'auto'}} className="main-container bg-transparent">
+      <div style={{height: '97vh', overflowY: 'auto'}} className="main-container bg-transparent">
           <div className="border-bottom d-flex align-items-center mb-4 p-4">
             <Link to="/dashboard" className='btn btn-light border my-3 bg-white'>
               {'<'}
             </Link>
             <header className="ml-2 pt-2">
-              <h4>{idEdit ? 'Editar ' : 'Generar '}{' '}{typeref === 'presupuesto' ? 'Presupuesto' : 'Nota de entrega'}</h4>
+              <h4>{match.params.id ? 'Editar ' : 'Generar '}{' '}{match.params.type === 'presupuesto' ? 'Presupuesto' : 'Nota de entrega'}</h4>
             </header>
           </div>
           <Container fluid >
@@ -256,7 +270,7 @@ const HandlePresupuesto = ({ history, match}) => {
                 </Form.Row>
 
                 <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
-                  <h4><small>{ typeref === 'presupuesto' ? 'Valido hasta:' : 'Pago recibido el:' }</small></h4>
+                  <h4><small>{ match.params.type === 'presupuesto' ? 'Valido hasta:' : 'Pago recibido el:' }</small></h4>
                   <DatePicker selected={xdate} onChange={date => setDate(date)} />
                 </div>
 
@@ -296,7 +310,7 @@ const HandlePresupuesto = ({ history, match}) => {
 
                       </Table>
                 </div>
-                <Button className="mb-4 btn-block" type="submit" variant="primary">{idEdit ? 'Actualizar' : 'Crear'} Presupuesto</Button>
+                <Button className="mb-4 btn-block" type="submit" variant="primary">{match.params.id ? 'Actualizar' : 'Crear'} Presupuesto</Button>
                 </Form>
             </Col>
             <Col sm={12} md={6}>
@@ -323,8 +337,9 @@ const HandlePresupuesto = ({ history, match}) => {
               }
             </Col>
           </Row>
+          
           </Container>
-        </div>
+        </div> 
     </MainLayout>
   )
 }

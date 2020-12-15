@@ -2,7 +2,7 @@ import React from 'react'
 import { Badge, Button, Form, Accordion, Row, Col, Carousel } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import defaultImg from '../assets/placeholder.jpg'
-const ProductList = ({products}) => {
+const ProductList = ({products, user}) => {
 
   const countStock = (variants) => {
     let stockFinal = 0;
@@ -45,6 +45,9 @@ const ProductList = ({products}) => {
               <i className="im im-care-down" style={{fontSize: '90%'}}></i>
             </Accordion.Toggle> */}
           </div>
+          {
+            (user.isAdmin && product.store) && <p className="border"><small>Disponible en {product.store.name}</small></p>
+          }
 {/*           <Accordion.Collapse eventKey={product._id} className="p-4">
             <div className="product-carousel">
               <div>

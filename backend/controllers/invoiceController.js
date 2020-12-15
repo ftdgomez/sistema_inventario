@@ -14,21 +14,40 @@ export const getInvoices = asyncHandler(async (req, res) => {
         },
       }
     : {}
-
-  if (pageSize > 0)
-  {
-    const count = await Invoice.countDocuments({...keyword})
-    const invoices = await Invoice.find({...keyword})
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-        .populate('products')
-    res.json({invoices, page, pages: Math.ceil(count / pageSize)})
-  }
-  else
-  {
-    const invoices = await Invoice.find({...keyword}).populate('products')
-    res.json({invoices, page, pages: 1})
-  }
+    if (req.user.isAdmin)
+    {
+      if (pageSize > 0)
+      {
+        const count = await Invoice.countDocuments({...keyword})
+        const invoices = await Invoice.find({...keyword})
+            .limit(pageSize)
+            .skip(pageSize * (page - 1))
+            .populate('products')
+        res.json({invoices, page, pages: Math.ceil(count / pageSize)})
+      }
+      else
+      {
+        const invoices = await Invoice.find({...keyword}).populate('products')
+        res.json({invoices, page, pages: 1})
+      }
+    }
+    else
+    {
+      if (pageSize > 0)
+      {
+        const count = await Invoice.countDocuments({...keyword, store: req.user._id})
+        const invoices = await Invoice.find({...keyword, store: req.user._id})
+            .limit(pageSize)
+            .skip(pageSize * (page - 1))
+            .populate('products')
+        res.json({invoices, page, pages: Math.ceil(count / pageSize)})
+      }
+      else
+      {
+        const invoices = await Invoice.find({...keyword, store: req.user._id}).populate('products')
+        res.json({invoices, page, pages: 1})
+      }
+    }
 })
 
 

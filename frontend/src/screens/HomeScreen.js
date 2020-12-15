@@ -23,6 +23,9 @@ const HomeScreen = ({ history, match }) => {
 
 
   useEffect(() => {
+    if (!userInfo || !userInfo.isStore) {
+      history.push('/login')
+    }
     const queries = new URLSearchParams(window.location.search)
     let finalobj = {}
     if (queries)
@@ -35,9 +38,6 @@ const HomeScreen = ({ history, match }) => {
     }
     dispatch(listProducts(keyWord, pageNumber, finalobj.pageSize, finalobj.keyName))
     setParams(finalobj)
-    if (!userInfo || !userInfo.isAdmin) {
-      history.push('/login')
-    }
   }, [dispatch, keyWord, pageNumber, userInfo])
 
 
@@ -51,7 +51,7 @@ const HomeScreen = ({ history, match }) => {
         <MainLayout>
           <Searchbar history={history} keyword={keyWord} params={queriesParams} />
           <div className="pt-2 border rounded-xl main-container">
-            <ProductList products={products}/>
+            <ProductList products={products} user={userInfo} />
             <div className="paginate-container">
               <Paginate
                 pages={pages}

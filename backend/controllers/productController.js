@@ -7,35 +7,49 @@ import Product from '../models/productModel.js'
 // @access  Public
 
 export const getProducts = asyncHandler(async (req, res) => {
-
   const pageSize = Number(req.query.pageSize) || 20
   const page = Number(req.query.pageNumber) || 1
   const keyName = req.query.keyName || 'name'
   const keyword = req.query.keyword
     ? {
-     /*    name: {
-          $regex: req.query.keyword,
-          $options: 'i',
-        }, */
         [keyName]: {
           $regex: req.query.keyword,
           $options: 'i',
         },
       }
     : {}
-
-  if (pageSize > 0)
+  if (req.user.isAdmin)
   {
-    const count = await Product.countDocuments({...keyword})
-    const products = await Product.find({...keyword})
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-    res.json({products, page, pages: Math.ceil(count / pageSize)})
+    if (pageSize > 0)
+    {
+      const count = await Product.countDocuments({...keyword})
+      const products = await Product.find({...keyword })
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+          .populate('store')
+      res.json({products, page, pages: Math.ceil(count / pageSize)})
+    }
+    else
+    {
+      const products = await Product.find({ ...keyword })
+      res.json({products, page, pages: 1})
+    }
   }
   else
   {
-    const products = await Product.find({...keyword})
-    res.json({products, page, pages: 1})
+    if (pageSize > 0)
+    {
+      const count = await Product.countDocuments({...keyword, store: req.user._id})
+      const products = await Product.find({...keyword, store: req.user._id})
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+      res.json({products, page, pages: Math.ceil(count / pageSize)})
+    }
+    else
+    {
+      const products = await Product.find({...keyword, store: req.user._id})
+      res.json({products, page, pages: 1})
+    }
   }
 })
 
@@ -79,7 +93,6 @@ export const createProduct = asyncHandler(async (req, res) => {
 export const updateProduct = asyncHandler(async (req, res) => {
   const {
     tags,
-    store,
     name,
     brand,
     description,
@@ -91,7 +104,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
   if (product) {
     product.tags =  tags
-    product.store = store
     product.name =  name
     product.brand = brand
     product.description = description

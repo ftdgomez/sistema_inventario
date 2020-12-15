@@ -92,7 +92,7 @@ const EditProduct = ({ match, history }) => {
     const e = await dispatch(deleteProduct(productId))
     if (e)
     {
-      history.push('/')
+      history.push('/productos')
     }
     else
     {

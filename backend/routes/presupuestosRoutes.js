@@ -9,15 +9,15 @@ import {
   updatePresupuesto
 } from '../controllers/presupuestosController.js'
 
-import { protect, admin } from '../middleware/authMiddleware.js'
+import { protect, admin, store } from '../middleware/authMiddleware.js'
 
 router.route('/')
-      .post(protect, admin, createPresupuesto)
-      .get(protect, admin, getPresupuestos)
+      .post(protect, store, createPresupuesto)
+      .get(protect, store, getPresupuestos)
 
 router.route('/:id')
-      .delete(protect, admin, deletePresupuesto)
-      .put(protect, admin, updatePresupuesto)
-      .get(protect, admin, getOnePresupuesto)
+      .delete(protect, store, deletePresupuesto)
+      .put(protect, store, updatePresupuesto)
+      .get(getOnePresupuesto)
 
 export default router

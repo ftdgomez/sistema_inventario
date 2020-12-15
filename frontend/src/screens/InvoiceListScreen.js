@@ -39,7 +39,7 @@ const InvoicesListScreen = ({ history, match }) => {
 
   useEffect(() => {
     dispatch(listInvoices(keyword, pageNumber))
-    if (!userInfo || !userInfo.isAdmin) {
+    if (!userInfo || !userInfo.isStore) {
       history.push('/login')
     }
   }, [dispatch, keyword, pageNumber, userInfo])

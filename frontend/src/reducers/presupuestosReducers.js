@@ -40,16 +40,16 @@ export const presupuestoListReducer = (state = { presupuestos: [] }, action) => 
   }
 }
 
-export const presupuestoCreateReducer = (state = {}, action) => {
+export const presupuestoCreateReducer = (state = { }, action) => {
   switch (action.type) {
     case PRESUPUESTO_CREATE_REQUEST:
-      return { loading: true }
+      return { loading: true   }
     case PRESUPUESTO_CREATE_SUCCESS:
-      return { loading: false, success: true, presupuesto: action.payload }
+      return { loading: false, success: true, createdPresupuesto: action.payload }
     case PRESUPUESTO_CREATE_FAIL:
       return { loading: false, error: action.payload }
     case PRESUPUESTO_CREATE_RESET:
-      return {}
+      return {   }
     default:
       return state
   }

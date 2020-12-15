@@ -31,7 +31,7 @@ const NotasDeEntregaListScreen = ({ history, match }) => {
 
   useEffect(() => {
     dispatch(listPresupuestos(keyword, pageNumber))
-    if (!userInfo || !userInfo.isAdmin) {
+    if (!userInfo || !userInfo.isStore) {
       history.push('/login')
     }
   }, [dispatch, keyword, pageNumber, userInfo])

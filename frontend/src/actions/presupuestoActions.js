@@ -77,18 +77,10 @@ export const resetListPresupuestos = () => async (
 export const listPresupuestoDetails = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: PRESUPUESTO_DETAILS_REQUEST })
-    const {
-      userLogin: { userInfo },
-    } = getState()
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    }
-    const { data } = await axios.get(`/api/presupuestos/${id}`, config)
+    const { data } = await axios.get(`/api/presupuestos/${id}`)
     console.log(data)
+
     dispatch({
       type: PRESUPUESTO_DETAILS_SUCCESS,
       payload: data,

@@ -15,7 +15,6 @@ const PdfGenerator = ({ history, match}) => {
   const { loading, invoice, presupuesto, success } = dataOrigin
 
   useEffect(() => {
-    console.log(dataOrigin)
     if (dataOrigin.presupuesto)
     {
       dispatch(listPresupuestoDetails(objId))

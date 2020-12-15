@@ -15,19 +15,39 @@ export const getPresupuestos = asyncHandler(async (req, res) => {
       }
     : {}
 
-  if (pageSize > 0)
+  if (req.user.isAdmin)
   {
-    const count = await Presupuesto.countDocuments({...keyword})
-    const presupuestos = await Presupuesto.find({...keyword})
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-        .populate('products')
-    res.json({presupuestos, page, pages: Math.ceil(count / pageSize)})
+    if (pageSize > 0)
+    {
+      const count = await Product.countDocuments({...keyword})
+      const products = await Product.find({...keyword})
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+          
+      res.json({products, page, pages: Math.ceil(count / pageSize)})
+    }
+    else
+    {
+      const products = await Product.find({...keyword})
+      res.json({products, page, pages: 1})
+    }
   }
   else
   {
-    const presupuestos = await Presupuesto.find({...keyword}).populate('products')
-    res.json({presupuestos, page, pages: 1})
+    if (pageSize > 0)
+    {
+      const count = await Presupuesto.countDocuments({...keyword, store: req.user._id})
+      const presupuestos = await Presupuesto.find({...keyword, store: req.user._id})
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+          .populate('products')
+      res.json({presupuestos, page, pages: Math.ceil(count / pageSize)})
+    }
+    else
+    {
+      const presupuestos = await Presupuesto.find({...keyword, store: req.user._id}).populate('products')
+      res.json({presupuestos, page, pages: 1})
+    }
   }
 })
 

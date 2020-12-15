@@ -10,16 +10,18 @@ import {
   getTopProducts
 } from '../controllers/productController.js'
 
+import { protect, admin, store } from '../middleware/authMiddleware.js'
+
 router.route('/')
-      .get(getProducts)
-      .post(createProduct)
+      .get(protect, store, getProducts)
+      .post(protect,store,createProduct)
 
 router.route('/top')
-      .get(getTopProducts)
+      .get(protect,store, getTopProducts)
 
 router.route('/:id')
-      .get(getOneProduct)
-      .put(updateProduct)
-      .delete(deleteProduct)
+      .get(protect,store, getOneProduct)
+      .put(protect,store, updateProduct)
+      .delete(protect,store, deleteProduct)
 
 export default router

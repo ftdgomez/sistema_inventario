@@ -63,7 +63,7 @@ export const invoiceCreateReducer = (state = {}, action) => {
     case INVOICE_CREATE_REQUEST:
       return { loading: true }
     case INVOICE_CREATE_SUCCESS:
-      return { loading: false, success: true, invoice: action.payload }
+      return { loading: false, success: true, createdInvoice: action.payload }
     case INVOICE_CREATE_FAIL:
       return { loading: false, error: action.payload }
     case INVOICE_CREATE_RESET:
