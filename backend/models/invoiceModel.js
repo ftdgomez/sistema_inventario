@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { nanoid } from 'nanoid'
 
 const invoiceSchema  = mongoose.Schema({
   cliente: {
@@ -37,6 +38,10 @@ const invoiceSchema  = mongoose.Schema({
   pagado_at: {
     type: Date,
     required: true
+  },
+  refid: {
+    type: String,
+    default: () => nanoid(5)
   }
 }, 
 {

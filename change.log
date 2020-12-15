@@ -15,25 +15,35 @@ Presupuestos:
     Borrar presupuesto                          READY
     SearchBar presupuesto                       BUG -> caso "test"
 
-    lo del id                                   PENDIENTE
     lo de pendiente -> factura                  PENDIENTE
     lo del IVA                                  PENDIENTE
 
+Notas De Entrega:
+    Crear nota de entrega                           READY
+    Editar nota de entrega                          READY
+    Mostrar nota de entrega | generar pdf           READY
+    Eliminar nota de entrega                        READY
+    Nota de entrega no encontrada                   READY
+    Borrar nota de entrega                          READY
+
 SearchBar:
-    búsqueda por nombre                         READY
-    búsqueda por sku                            READY
-    búsqueda por tag                            READY
+    búsqueda por nombre                             READY
+    búsqueda por sku                                READY
+    búsqueda por tag                                READY
 
 Paginación:
-    ir a primera página                         READY
-    ir a página anterior                        READY
-    mostrar página actual                       READY
-    ir a página siguiente                       READY
-    ir a la última página                       READY
+    ir a primera página                             READY
+    ir a página anterior                            READY
+    mostrar página actual                           READY
+    ir a página siguiente                           READY
+    ir a la última página                           READY
 
 pendiente:
-Crear y Editar Notas De Entrega
 Panel de administración para Super Usuario
 Subir productos en lote por medio de csv
 Funcionalidades de envío de correos y whatsapp via whatsapp web
 Versión Móvil
+
+
+cabos sueltos:
+preguntar por el footer de la nota de entrega. ¿Qué texto debe ir ahí?

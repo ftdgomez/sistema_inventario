@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { listProducts, resetListProducts } from '../actions/productActions'
 import PresupuestoProductList from '../components/PresupuestoProductList'
 import { createPresupuesto, listPresupuestoDetails, updatePresupuesto } from '../actions/presupuestoActions'
+import { createInvoice, listInvoiceDetails, updateInvoice } from '../actions/invoiceActions'
 import { Link } from 'react-router-dom'
 
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 
-const CreatePresupuesto = ({ history, match}) => {
+const HandlePresupuesto = ({ history, match}) => {
   const dispatch = useDispatch()
 
   const productList = useSelector((state) => state.productList)
@@ -21,10 +22,12 @@ const CreatePresupuesto = ({ history, match}) => {
   const { userInfo } = userLogin
 
   const presupuestoCreate = useSelector((state) => state.presupuestoCreate )
-
   const presupuestoDetails = useSelector(state => state.presupuestoDetails)
-
   const presupuestoUpdate = useSelector(state => state.presupuestoUpdate)
+
+  const invoiceCreate = useSelector((state) => state.invoiceCreate )
+  const invoiceDetails = useSelector(state => state.invoiceDetails)
+  const invoiceUpdate = useSelector(state => state.invoiceUpdate)
 
   const idEdit = match.params.id
 
@@ -36,6 +39,8 @@ const CreatePresupuesto = ({ history, match}) => {
 
   const [productos, setProductos] = useState([])
   const [filterText, setFilterText] = useState('')
+
+  const [typeref, setTyperef] = useState('')
 
   const cleanInterface = () => {
     setClientName('')
@@ -62,6 +67,11 @@ const CreatePresupuesto = ({ history, match}) => {
     setItems(tempArr)
   }
 
+  const cleanup = () => {
+    dispatch({type: 'PRESUPUESTO_DETAILS_RESET'})
+    dispatch(resetListProducts())
+  }
+
   useEffect(()=> {
     console.log(items)  
   }, [items, dispatch])
@@ -75,12 +85,24 @@ const CreatePresupuesto = ({ history, match}) => {
 
   /* Populate listProduct on Mount */
   useEffect(()=> {
+    const typeref = match.params.type
+    setTyperef(match.params.type)
     dispatch(listProducts('','', -1))
-    if (idEdit)
+
+    if (idEdit && typeref === 'presupuesto')
     {
       dispatch(listPresupuestoDetails(idEdit))
     }
+    if (idEdit && typeref === 'invoice')
+    {
+      dispatch(listInvoiceDetails(idEdit))
+    }
   }, [])
+
+  /* clean the componente on history change */
+  useEffect(()=> {
+    cleanup()
+  }, [history])
 
   useEffect(()=> {
 
@@ -93,15 +115,37 @@ const CreatePresupuesto = ({ history, match}) => {
       setItems(items)
       setDate(new Date(valido_hasta))
     }
-  }, [presupuestoDetails, dispatch])
+    if (invoiceDetails.success)
+    {
+      const {cliente, items, pagado_at} = invoiceDetails.invoice
+      setClientName(cliente.name)
+      setEmail(cliente.email)
+      setPhone(cliente.phone)
+      setItems(items)
+      setDate(new Date(pagado_at))
+    }
+  }, [presupuestoDetails, invoiceDetails, dispatch])
+
+  /* show toast */
+  useEffect(()=> {
+    if (presupuestoCreate.success)
+    {
+      toast.success('Presupuesto creado con éxito!')
+      cleanInterface()
+      dispatch({ type: 'PRESUPUESTO_CREATE_RESET' })
+    }
+    if (presupuestoUpdate.success)
+    {
+      toast.success('Presupuesto actualizado con éxito!')
+      history.push('/list/presupuestos')
+      cleanInterface()
+      dispatch({ type: 'PRESUPUESTO_UPDATE_RESET' })
+    }
+  }, presupuestoCreate.success, presupuestoUpdate.success)
 
   /* clean details and list product on unmount*/
   useEffect(()=> {
-    return function cleanup(){
-      console.log('unmount')
-      dispatch({type: 'PRESUPUESTO_DETAILS_RESET'})
-      dispatch(resetListProducts())
-    }
+    return cleanup()
   }, [])
 
   const handleFilter = (e) => {
@@ -125,34 +169,52 @@ const CreatePresupuesto = ({ history, match}) => {
     e.preventDefault()
     if ( clientName !== '' && email !== '' && phone !== '' && items.length > 0)
     {
-      let data = {
-        cliente: {
-          name: clientName,
-          email: email,
-          phone: phone
-        },
-        store: userInfo._id,
-        items: items.map(el => ({qty: el.qty, product: el.product._id, variant: el.variant})),
-        total: items.reduce((acc, el) => acc += (el.qty * el.variant.sellPrice), 0),
-        state: 'pendiente',
-        valido_hasta: xdate
-      }
-      if (!idEdit)
+      if (typeref === 'presupuesto')
       {
-        dispatch(createPresupuesto(data))
-        if (presupuestoCreate.success)
+        let data = {
+          cliente: {
+            name: clientName,
+            email: email,
+            phone: phone
+          },
+          store: userInfo._id,
+          items: items.map(el => ({qty: el.qty, product: el.product._id, variant: el.variant})),
+          total: items.reduce((acc, el) => acc += (el.qty * el.variant.sellPrice), 0),
+          state: 'pendiente',
+          valido_hasta: xdate
+        }
+        if (!idEdit)
         {
-          toast.success('Presupuesto creado con éxito!')
+          dispatch(createPresupuesto(data))
+        }
+        else
+        {
+          data._id = idEdit
+          dispatch(updatePresupuesto(data))
         }
       }
-      else
+      else if (typeref === 'invoice')
       {
-        data._id = idEdit
-        dispatch(updatePresupuesto(data))
-        if (presupuestoUpdate.success)
+        let data = {
+          cliente: {
+            name: clientName,
+            email: email,
+            phone: phone
+          },
+          store: userInfo._id,
+          items: items.map(el => ({qty: el.qty, product: el.product._id, variant: el.variant})),
+          total: items.reduce((acc, el) => acc += (el.qty * el.variant.sellPrice), 0),
+          state: 'pagada',
+          pagado_at: xdate
+        }
+        if (!idEdit)
         {
-          toast.success('Presupuesto actualizado con éxito!')
-          history.push('/presupuestos')
+          dispatch(createInvoice(data))
+        }
+        else
+        {
+          data._id = idEdit
+          dispatch(updateInvoice(data))
         }
       }
     }
@@ -166,11 +228,11 @@ const CreatePresupuesto = ({ history, match}) => {
     <MainLayout>
         <div style={{height: '97vh', overflowY: 'auto'}} className="main-container bg-transparent">
           <div className="border-bottom d-flex align-items-center mb-4 p-4">
-            <Link to="/presupuestos" className='btn btn-light border my-3 bg-white'>
+            <Link to="/dashboard" className='btn btn-light border my-3 bg-white'>
               {'<'}
             </Link>
             <header className="ml-2 pt-2">
-            <h4>{idEdit ? 'Editar ' : 'Generar '} Presupuesto</h4>
+              <h4>{idEdit ? 'Editar ' : 'Generar '}{' '}{typeref === 'presupuesto' ? 'Presupuesto' : 'Nota de entrega'}</h4>
             </header>
           </div>
           <Container fluid >
@@ -194,7 +256,7 @@ const CreatePresupuesto = ({ history, match}) => {
                 </Form.Row>
 
                 <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
-                  <h4><small>Valido hasta:</small></h4>
+                  <h4><small>{ typeref === 'presupuesto' ? 'Valido hasta:' : 'Pago recibido el:' }</small></h4>
                   <DatePicker selected={xdate} onChange={date => setDate(date)} />
                 </div>
 
@@ -220,6 +282,7 @@ const CreatePresupuesto = ({ history, match}) => {
                                 </td>
                                 <td>
                                   <Form.Control onChange={(e)=>handleItemChange(e, index, 'variant')} as="select">
+                                    {item.variant && <option value={JSON.stringify(item.variant)}>{`${item.variant.ref} -> $${item.variant.sellPrice}`}</option>}
                                     {item.product.variants.map((variant)=><option value={JSON.stringify(variant)} key={variant.ref+'123'}>{`${variant.ref} -> $${variant.sellPrice}`}</option>)}
                                   </Form.Control> 
                                 </td>
@@ -230,38 +293,7 @@ const CreatePresupuesto = ({ history, match}) => {
                             ))
                           }
                         </tbody>
-{/*                         {
-                          items.map((v, index) => (
-                            <Form.Row className="mb-2" key={`ref-item-${index}`}>
-                                <Col sm={4}>
-                                  {index === 0 && <Form.Label>Nombre producto</Form.Label>}
-                                  <p><small>{v.name}</small></p>
-                                </Col>
-                                <Col sm={2}>
-                                  <Form.Label>Cantidad</Form.Label>
-                                  <Form.Control onChange={(e)=>handleItemChange(e, index, 'qty')} placeholder="Cantidad" value={v.qty} />
-                                </Col>
-                                {
-                                  v.variants.length > 1 ?
-                                  <Col>
-                                        {index === 0 && <Form.Label>Precio Unidad</Form.Label>}
-                                        <Form.Control onChange={(e)=>handleItemChange(e, index, 'variants', [{ref: e.target.value.split('->')[0].trim(), sellPrice: Number(e.target.value.split('->')[1].trim().substring(1))}])} as="select">
-                                          {v.variants.map((variant)=><option key={variant.ref+'123'}>{`${variant.ref} -> $${variant.sellPrice}`}</option>)}
-                                        </Form.Control>
-                                  </Col>
-                                  :
-                                  <Col>
-                                    {index === 0 && <Form.Label>Precio Unidad</Form.Label>}
-                                    <p className="form-control">Precio único: ${v.variants[0].sellPrice}</p>
-                                  </Col>
 
-                                }
-                                <Col sm={1}>
-                                   <Button style={{marginTop: '2em'}} onClick={()=>setItems(items.filter((items, i) => i !== index))} variant="danger">x</Button>
-                                </Col>
-                            </Form.Row>
-                          ))
-                        } */}
                       </Table>
                 </div>
                 <Button className="mb-4 btn-block" type="submit" variant="primary">{idEdit ? 'Actualizar' : 'Crear'} Presupuesto</Button>
@@ -297,4 +329,4 @@ const CreatePresupuesto = ({ history, match}) => {
   )
 }
 
-export default CreatePresupuesto
+export default HandlePresupuesto

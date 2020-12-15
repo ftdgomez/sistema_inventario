@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { nanoid } from 'nanoid'
 
 const presupuestoSchema  = mongoose.Schema({
   cliente: {
@@ -37,6 +38,10 @@ const presupuestoSchema  = mongoose.Schema({
   valido_hasta: {
     type: Date,
     required: true
+  },
+  refid: {
+    type: String,
+    default: () => nanoid(5)
   }
 }, 
 {

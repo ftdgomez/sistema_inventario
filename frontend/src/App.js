@@ -5,22 +5,24 @@ import LoginScreen from './screens/LoginScreen';
 import NotFoundScreen from './screens/NotFoundScreen';
 import ProductHandler from './screens/ProductHandler';
 import EditProduct from './screens/EditProduct';
-import CreatePresupuesto from './screens/CreatePresupuesto';
+import HandlePresupuesto from './screens/HandlePresupuesto';
 import PresupuestosListScreen from './screens/PresupuestosListScreen';
-import InvoiceListScreen from './screens/InvoiceListScreen';
 import TiendasList from './screens/TiendasList';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PdfGenerator from './screens/PdfGenerator';
-import CreateInvoice from './screens/CreateInvoice';
+import Dashboard from './screens/Dashboard';
+
 
 function App() {
   return (
     <Router>
       <main className="bg-light">
         <Route path="/login" component={LoginScreen} exact />
-        
-          <Route path='/' component={HomeScreen} exact />
+        <Route path="/" component={Dashboard} exact />
+        <Route path="/dashboard" component={Dashboard} exact />
+
+          <Route path='/productos' component={HomeScreen} exact />
           <Route path='/search/:keyword' component={HomeScreen} exact />
           <Route path='/page/:pageNumber' component={HomeScreen} exact />
           <Route
@@ -32,30 +34,19 @@ function App() {
           <Route path='/product/:id' component={EditProduct} />
           <Route path='/create-product' component={ProductHandler} exact />
           
-          <Route path='/presupuesto/create' component={CreatePresupuesto} exact />
-          <Route path='/presupuesto/edit/:id' component={CreatePresupuesto} exact />
-          <Route path='/presupuesto/:id' component={PdfGenerator} exact />
-          <Route path='/presupuestos' component={PresupuestosListScreen} exact />
-          <Route path='/presupuestos/search/:keyword' component={PresupuestosListScreen} exact />
-          <Route path='/presupuestos/page/:pageNumber' component={PresupuestosListScreen} exact />
+          <Route path='/create/:type' component={HandlePresupuesto} exact />
+          <Route path='/edit/:type/:id/' component={HandlePresupuesto} exact />
+
+          <Route path='/list/:type' component={PresupuestosListScreen} exact />
+          <Route path='/list/:type/search/:keyword' component={PresupuestosListScreen} exact />
+          <Route path='/list/:type/page/:pageNumber' component={PresupuestosListScreen} exact />
           <Route
-            path='/presupuestos/search/:keyword/page/:pageNumber'
+            path='/list/:type/search/:keyword/page/:pageNumber'
             component={PresupuestosListScreen}
             exact
           />
 
-          <Route path='/invoice/create' component={CreateInvoice} exact />
-          <Route path='/invoice/edit/:id' component={CreateInvoice} exact />
-          <Route path='/invoice/:id' component={PdfGenerator} exact />
-          <Route path='/invoices' component={InvoiceListScreen} exact />
-          <Route path='/invoices/search/:keyword' component={InvoiceListScreen} exact />
-          <Route path='/invoices/page/:pageNumber' component={InvoiceListScreen} exact />
-          <Route
-            path='/presupuestos/search/:keyword/page/:pageNumber'
-            component={InvoiceListScreen}
-            exact
-          />
-
+          <Route path='/pdf/:type/:id' component={PdfGenerator} exact />
 
           <Route path="/tiendas" component={TiendasList} />
 

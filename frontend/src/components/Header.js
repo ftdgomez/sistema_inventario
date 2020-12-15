@@ -5,7 +5,7 @@ import logo from '../assets/logo.svg'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/userActions'
 
-const Header = ({ setHeaderState, headerState }) => {
+const Header = () => {
   const dispatch = useDispatch()
 
   const userLogin = useSelector((state) => state.userLogin)
@@ -18,12 +18,12 @@ const Header = ({ setHeaderState, headerState }) => {
   return (
     <header className="m-2 border rounded-xl bg-white">
       <div className="border-bottom py-3 px-4">
-        <Link to="/"><img src={logo} alt="" style={{height: 'auto', width: '100%'}} /></Link>
+        <Link to="/dashboard"><img src={logo} alt="" style={{height: 'auto', width: '100%'}} /></Link>
       </div>
       <nav>
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/'>Productos</NavLink>
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/presupuestos'>Presupuestos</NavLink>
-        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/invoices'>Notas De Entrega</NavLink>
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/productos'>Productos</NavLink>
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/list/presupuestos'>Presupuestos</NavLink>
+        <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/list/invoices'>Notas De Entrega</NavLink>
      {/*    <NavLink activeClassName='nav-item-c-is-active' className="nav-item-c" to='/tiendas'>Tiendas</NavLink> */}
       </nav>
   
@@ -36,24 +36,22 @@ const Header = ({ setHeaderState, headerState }) => {
         </ListGroup.Item>
         
         <ListGroup.Item>
-          <NavLink  to='/presupuesto/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+          <NavLink  to='/create/presupuesto' activeClassName='nav-item-c-is-active' className="btn btn-outline">
             <i className="im im-plus" style={{fontSize: '12px'}}></i> Presupuesto
           </NavLink>
         </ListGroup.Item>
 
          <ListGroup.Item>
-          <NavLink to='/invoice/create' activeClassName='nav-item-c-is-active' className="btn btn-outline">
+            <NavLink to='/create/invoice' activeClassName='nav-item-c-is-active' className="btn btn-outline">
               <i className="im im-plus" style={{fontSize: '12px'}}></i> Nota De Entrega
-            </NavLink>        </ListGroup.Item>
-            
+            </NavLink>
+          </ListGroup.Item>
+
           <ListGroup.Item>
             <Button size="sm" variant="outline-primary" onClick={logoutHandler}>Cerrar Sesión</Button>
           </ListGroup.Item>
         </ListGroup>
       <div className="d-flex mx-4">
-        <button onClick={()=>setHeaderState(!headerState)} className='btn btn-light border my-4'>
-          {'<'}
-        </button>
         <p className="mt-3 ml-2">
           <small>Logged as: 
             { userInfo && <span className="text-primary">{userInfo.name}</span>}

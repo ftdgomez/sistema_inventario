@@ -27,6 +27,7 @@ export const invoiceListReducer = (state = { invoices: [] }, action) => {
       return {
         loading: false,
         invoices: action.payload.invoices,
+        success: true,
         pages: action.payload.pages,
         page: action.payload.page,
       }
@@ -38,6 +39,24 @@ export const invoiceListReducer = (state = { invoices: [] }, action) => {
       return state
   }
 }
+export const invoiceDetailsReducer = (
+  state = { invoice: {} },
+  action
+) => {
+  switch (action.type) {
+    case INVOICE_DETAILS_REQUEST:
+      return { loading: true, invoice: {} }
+    case INVOICE_DETAILS_SUCCESS:
+      return { loading: false, invoice: action.payload, success: true }
+    case INVOICE_DETAILS_FAIL:
+      return { loading: false, error: action.payload }
+    case 'INVOICE_DETAILS_RESET':
+      return {loading: true, invoice: {}}
+    default:
+      return state
+  }
+}
+
 
 export const invoiceCreateReducer = (state = {}, action) => {
   switch (action.type) {
@@ -82,20 +101,3 @@ export const invoiceDeleteReducer = (state = { invoice: {} }, action) => {
   }
 }
 
-export const invoiceDetailsReducer = (
-  state = { },
-  action
-) => {
-  switch (action.type) {
-    case INVOICE_DETAILS_REQUEST:
-      return { ...state, loading: true }
-    case INVOICE_DETAILS_SUCCESS:
-      return { loading: false, invoice: action.payload, success: true }
-    case INVOICE_DETAILS_FAIL:
-      return { loading: false, error: action.payload }
-    case 'INVOICE_DETAILS_RESET':
-      return {loading: true, invoice: null}
-    default:
-      return state
-  }
-}

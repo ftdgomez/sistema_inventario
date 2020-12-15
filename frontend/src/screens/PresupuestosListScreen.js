@@ -2,30 +2,49 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import MainLayout from '../layouts/MainLayout'
 import { listPresupuestos, deletePresupuesto } from '../actions/presupuestoActions'
+import { listInvoices, deleteInvoice } from '../actions/invoiceActions'
 import InlineLoader from '../components/InlineLoader'
 import Paginate from '../components/Paginate'
 import { Form, Button, Table, ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { PRESUPUESTO_LIST_RESET } from '../constants/presupuetoConstants'
+import { INVOICE_LIST_RESET } from '../constants/invoiceConstants'
 
 const PresupuestosListScreen = ({ history, match }) => {
   const keyword = match.params.keyword
-
   const pageNumber = match.params.pageNumber || 1
-
   const dispatch = useDispatch()
-  const presupuestoList = useSelector(state => state.presupuestoList)
-  const { loading, error, presupuestos, page, pages } = presupuestoList
-
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
   const [formKeyword, setFormKeyword] = useState('')
+  const dataOrigin = useSelector(state => match.params.type === 'presupuestos' ? state.presupuestoList : state.invoiceList)
+  const { loading, error, success, page, pages, invoices, presupuestos } = dataOrigin
+
+  useEffect(() => {
+    if (!userInfo || !userInfo.isAdmin) {
+      history.push('/login')
+    }
+    if (dataOrigin.invoices)
+    {
+      dispatch(listInvoices(keyword, pageNumber))
+    }
+    if (dataOrigin.presupuestos)
+    {
+      dispatch(listPresupuestos(keyword, pageNumber))
+    }
+    return function cleanup()
+    {
+      dispatch({type: PRESUPUESTO_LIST_RESET})
+      dispatch({type: INVOICE_LIST_RESET})
+    }
+  }, [dispatch, history, keyword, pageNumber, userInfo, match])
+
 
   const submitHandler = (e) => {
     e.preventDefault()
     if (formKeyword.trim()) {
-
-      history.replace(`/presupuestos/search/${formKeyword}`)
+      history.replace(`/list/${match.params.type}/search/${formKeyword}`)
     } else {
       history.push('/')
     }
@@ -33,16 +52,16 @@ const PresupuestosListScreen = ({ history, match }) => {
 
   const handleDelete = (e, id) => {
     e.preventDefault()
-    dispatch(deletePresupuesto(id))
-    history.go(0)
+    if (match.params.type === 'presupuestos')
+    {
+      dispatch(deletePresupuesto(id))
+    }
+    else
+    {
+      dispatch(deleteInvoice(id))
+    }
   }
 
-  useEffect(() => {
-    dispatch(listPresupuestos(keyword, pageNumber))
-    if (!userInfo || !userInfo.isAdmin) {
-      history.push('/login')
-    }
-  }, [dispatch, keyword, pageNumber, userInfo])
 
   return (
     <MainLayout>
@@ -60,30 +79,30 @@ const PresupuestosListScreen = ({ history, match }) => {
               {keyword && <p className="m-0 p-0 mt-2">Mostrando presupuestos relacionados con <span className="text-primary">"{keyword}"</span></p>}
           </div>
           {
-            presupuestos.length > 0 ?
+            (presupuestos || invoices) ?
             <div className="pt-2 border rounded-xl main-container">
             <div className="m-4">
               <Table striped bordered hover size="sm">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>Enviado a:</th>
+                    <th>#Ref</th>
+                    <th>cliente</th>
                     <th>Estado</th>
-                    <th>Total Presupuestado</th>
+                    <th>Total {match.params.type === 'presupuestos' ? 'Presupuestado' : 'Vendido' }</th>
                     <th>Controles</th>
                   </tr>
                 </thead>
                 <tbody>
-                    {presupuestos.map((p, index) => (
-                        <tr>
-                          <td>{index + 1}</td>
+                    {dataOrigin[match.params.type].map((p, index) => (
+                        <tr key={p._id}>
+                          <td>{p.refid}</td>
                           <td>{p.cliente.name}</td>
                           <td>{p.state}</td>
                           <td>$ {p.total}</td>
                           <td>
                           <ButtonGroup>
-                            <Link to={`/presupuesto/edit/${p._id}`} className="btn btn-primary">Editar</Link>
-                            <a className="btn btn-primary" target="_blank" href={`/presupuesto/${p._id}`}>Ver / Descargar</a>
+                            <Link to={`/edit/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}`} className="btn btn-primary">Editar</Link>
+                            <a className="btn btn-primary" target="_blank" href={`/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`}>Ver / Descargar</a>
                             <DropdownButton as={ButtonGroup} title="Enviar" id="bg-nested-dropdown">
                               <Dropdown.Item eventKey="1">Enviar por correo</Dropdown.Item>
                               <Dropdown.Item eventKey="2">Enviar por whatsapp</Dropdown.Item>
@@ -105,7 +124,15 @@ const PresupuestosListScreen = ({ history, match }) => {
             </div>
           </div>
           :
-          <p className="p-4 bg-white border rounded-xl shadow-md">No se encontraron presupuestos en el sistema.</p>
+          <p className="p-4 bg-white border rounded-xl shadow-md">
+            No se encontraron  {' '}
+            {match.params.type === 'presupuestos'
+              ? 'presupuestos'
+              : 'notas de entrega'
+            }
+            {' '}en el sistema.
+            
+          </p>
           }
 
         </div>

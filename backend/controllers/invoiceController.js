@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import Invoice from '../models/invoiceModel.js'
-
+import Product from '../models/productModel.js'
 
 export const getInvoices = asyncHandler(async (req, res) => {
 
@@ -8,7 +8,7 @@ export const getInvoices = asyncHandler(async (req, res) => {
   const page = Number(req.query.pageNumber) || 1
   const keyword = req.query.keyword
     ? {
-        ['cliente.name']: {
+        refid: {
           $regex: req.query.keyword,
           $options: 'i',
         },
@@ -50,10 +50,22 @@ export const getOneInvoice = asyncHandler(async (req, res) => {
 export const createInvoice = asyncHandler(async (req, res) => {
   const invoice = new Invoice(req.body)
 
-  try {
+  try
+  {
     const createdInvoice = await invoice.save()
+
+    createdInvoice.items.forEach(async (item) => {
+      let product = await Product.findOne({_id: item.product})
+      let indexRef = product.variants.findIndex(x => x.ref === item.variant.ref)
+      product.variants[indexRef].countInStock -= item.qty
+      product.variants[indexRef].sold += item.qty
+      product.save()
+    }) 
+
     res.status(201).json(createdInvoice)
-  } catch (error) {
+  }
+  catch (error)
+  {
     res.status(400)
     console.error(error)
     throw new Error('Bad request')
@@ -70,14 +82,14 @@ export const updateInvoice = asyncHandler(async (req, res) => {
       store,
       items,
       state,
-      valido_hasta,
+      pagado_at,
       total
     } = req.body
     invoice.cliente = cliente
     invoice.store = store
     invoice.items = items
     invoice.state = state
-    invoice.valido_hasta = valido_hasta
+    invoice.pagado_at = pagado_at
     invoice.total = total
 
     /* res.json(invoice) */

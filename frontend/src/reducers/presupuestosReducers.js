@@ -29,6 +29,7 @@ export const presupuestoListReducer = (state = { presupuestos: [] }, action) => 
         presupuestos: action.payload.presupuestos,
         pages: action.payload.pages,
         page: action.payload.page,
+        success: true
       }
     case PRESUPUESTO_LIST_RESET:
       return { loading: true, presupuestos: []}
@@ -83,7 +84,7 @@ export const presupuestoDeleteReducer = (state = { presupuesto: {} }, action) =>
 }
 
 export const presupuestoDetailsReducer = (
-  state = { },
+  state = { presupuesto: {} },
   action
 ) => {
   switch (action.type) {

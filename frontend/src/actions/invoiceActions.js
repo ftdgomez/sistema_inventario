@@ -40,7 +40,7 @@ export const listInvoices = (keyword = '', pageNumber = '', pageSize = 20) => as
       `/api/invoices?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config
     )
 
-    console.log(data)
+   /*  console.log(data) */
 
     dispatch({
       type: INVOICE_LIST_SUCCESS,
@@ -90,7 +90,7 @@ export const listInvoiceDetails = (id) => async (dispatch, getState) => {
       },
     }
     const { data } = await axios.get(`/api/invoices/${id}`, config)
-    console.log(data)
+  /*   console.log(data) */
     dispatch({
       type: INVOICE_DETAILS_SUCCESS,
       payload: data,

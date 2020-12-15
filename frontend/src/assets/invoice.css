@@ -12,3 +12,11 @@
 *{
     color: #3f3f3f;
 }
+
+@media print
+{
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+}
