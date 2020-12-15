@@ -23,11 +23,12 @@ export const getInvoices = asyncHandler(async (req, res) => {
             .limit(pageSize)
             .skip(pageSize * (page - 1))
             .populate('products')
+            .populate('store')
         res.json({invoices, page, pages: Math.ceil(count / pageSize)})
       }
       else
       {
-        const invoices = await Invoice.find({...keyword}).populate('products')
+        const invoices = await Invoice.find({...keyword}).populate('products').populate('store')
         res.json({invoices, page, pages: 1})
       }
     }

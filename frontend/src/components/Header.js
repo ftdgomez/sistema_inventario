@@ -5,7 +5,7 @@ import logo from '../assets/logo.svg'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/userActions'
 
-const Header = () => {
+const Header = ({ headerState, setHeaderState }) => {
   const dispatch = useDispatch()
 
   const userLogin = useSelector((state) => state.userLogin)

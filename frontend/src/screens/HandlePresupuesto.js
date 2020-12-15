@@ -277,7 +277,7 @@ const HandlePresupuesto = ({ history, match}) => {
                 <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
                       <h4><small>Items ({items.length})</small></h4>
                       {items.length < 1 && <p>Utilice el filtrado de productos para empezar agregar items a este presupuesto.</p>}
-                      <Table striped bordered hover size="sm">
+                      <Table striped bordered hover size="sm" responsive>
                         <thead>
                           <tr>
                             <th>Nombre Producto</th>

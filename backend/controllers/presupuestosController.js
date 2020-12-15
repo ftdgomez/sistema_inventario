@@ -19,17 +19,18 @@ export const getPresupuestos = asyncHandler(async (req, res) => {
   {
     if (pageSize > 0)
     {
-      const count = await Product.countDocuments({...keyword})
-      const products = await Product.find({...keyword})
+      const count = await Presupuesto.countDocuments({...keyword})
+      const presupuestos = await Presupuesto.find({...keyword})
           .limit(pageSize)
           .skip(pageSize * (page - 1))
-          
-      res.json({products, page, pages: Math.ceil(count / pageSize)})
+          .populate('products')
+          .populate('store')
+      res.json({presupuestos, page, pages: Math.ceil(count / pageSize)})
     }
     else
     {
-      const products = await Product.find({...keyword})
-      res.json({products, page, pages: 1})
+      const presupuestos = await Presupuesto.find({...keyword})
+      res.json({presupuestos, page, pages: 1})
     }
   }
   else
@@ -45,7 +46,7 @@ export const getPresupuestos = asyncHandler(async (req, res) => {
     }
     else
     {
-      const presupuestos = await Presupuesto.find({...keyword, store: req.user._id}).populate('products')
+      const presupuestos = await Presupuesto.find({...keyword, store: req.user._id})
       res.json({presupuestos, page, pages: 1})
     }
   }

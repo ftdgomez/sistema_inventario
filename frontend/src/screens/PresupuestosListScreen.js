@@ -88,13 +88,14 @@ const PresupuestosListScreen = ({ history, match }) => {
             (presupuestos || invoices) ?
             <div className="pt-2 border rounded-xl main-container">
             <div className="m-4">
-              <Table striped bordered hover size="sm">
+              <Table striped bordered hover size="sm" responsive>
                 <thead>
                   <tr>
                     <th>#Ref</th>
                     <th>cliente</th>
                     <th>Estado</th>
                     <th>Total {match.params.type === 'presupuestos' ? 'Presupuestado' : 'Vendido' }</th>
+                    { userInfo && <>{userInfo.isAdmin && <th>Tienda:</th>}</>}
                     <th>Controles</th>
                   </tr>
                 </thead>
@@ -105,6 +106,7 @@ const PresupuestosListScreen = ({ history, match }) => {
                           <td>{p.cliente.name}</td>
                           <td>{p.state}</td>
                           <td>$ {p.total}</td>
+                          {userInfo && <>{userInfo.isAdmin && <td>{p.store.name}</td>}</>}
                           <td>
                           <ButtonGroup>
                             <Link to={`/edit/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}`} className="btn btn-primary">Editar</Link>
