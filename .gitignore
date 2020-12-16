@@ -27,3 +27,7 @@ yarn-error.log*
 
 #storefront
 storefront/
+uploads/
+public/*.jpg
+public/*.png
+public/*.jpeg

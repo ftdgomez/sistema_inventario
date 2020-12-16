@@ -32,7 +32,10 @@ const ProductList = ({products, user}) => {
       {products.map(product => (
         <div key={product._id}>
           <div className="product-item product-list-grid">
-            <img src={product.img ? product.img[0] : defaultImg } alt="" style={{height: '50px', width: '50px'}} />
+{/*             <img src={product.imgpaths[0].srcPath} alt="" style={{}} />
+ */}
+             <div style={{backgroundImage: `url(${product.imgpaths[0].destinationPath})`, backgroundSize: 'cover',
+          backgroundPosition: 'center', height: '50px', width: '50px'}}></div>
             <span>{product.sku}</span>
             <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>
             <span>{product.tags.map((tag, index) => (<Badge key={tag+index} className="mr-2 badge-custom">{tag}</Badge>))}</span>
@@ -44,6 +47,9 @@ const ProductList = ({products, user}) => {
     {/*         <Accordion.Toggle as={Button} className="mr-2" size="sm" variant="outline-secondary" eventKey={product._id}>
               <i className="im im-care-down" style={{fontSize: '90%'}}></i>
             </Accordion.Toggle> */}
+          </div>
+          <div className="px-4 py-2">
+            {product.variants.filter(i => i.countInStock < 10).map((el,i,arr )=> <p key={el._id} className="text-danger m-0"><small>{arr.length > 1 ? `Variante "${el.ref}"` : ''} queda poco stock: {el.countInStock}</small></p>)}
           </div>
           {
             (user.isAdmin && product.store) && <p className="border"><small>Disponible en {product.store.name}</small></p>

@@ -21,10 +21,10 @@ const importUserAndProducts = async () => {
     await User.deleteMany()
     await Product.deleteMany()
     const createdUsers = await User.insertMany(users)
-    const adminUser = createdUsers[0]._id
+    // const adminUser = createdUsers[0]._id
     
-    const draftProducts = products.map((product) => {
-      return { ...product, store: adminUser }
+    const draftProducts = products.map((product, index) => {
+      return { ...product, store: createdUsers[index % 2 === 0 ? 1 : 0]._id, sku: `${createdUsers[index % 2 === 0 ? 1 : 0].refid}-${product.sku}` }
     })
 
     

@@ -109,6 +109,7 @@ const HandlePresupuesto = ({ history, match}) => {
     if (presupuestoUpdate.success)
     {
       toast.success('Presupuesto actualizado con éxito!')
+      history.push('/list/presupuestos')
       dispatch({ type: 'PRESUPUESTO_UPDATE_RESET'})
     }
     if (presupuestoUpdate.error)
@@ -119,6 +120,7 @@ const HandlePresupuesto = ({ history, match}) => {
     if (invoiceUpdate.success)
     {
       toast.success('Nota de entrega actualizada con éxito!')
+      history.push('/list/invoices')
       dispatch({ type: 'INVOICE_UPDATE_RESET'})
     }
     if (invoiceUpdate.error)

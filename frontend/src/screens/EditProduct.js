@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import Loader from '../components/Loader'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 import { toast } from 'react-toastify'
+import UploadFiles from './UploadFiles'
 
 const EditProduct = ({ match, history }) => {
 
@@ -17,7 +18,7 @@ const EditProduct = ({ match, history }) => {
   const [tagsStr, setTags] = useState('')
   const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
   const [show, setShow] = useState(false);
-
+  const [imgPaths, setImgPaths] = useState(null)
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -56,7 +57,7 @@ const EditProduct = ({ match, history }) => {
   useEffect(() => {
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET })
-      history.push('/')
+      history.push('/productos')
     } 
     if (product)
     {
@@ -70,12 +71,14 @@ const EditProduct = ({ match, history }) => {
         setDescription(product.description)
         setTags(product.tags.toString())
         setVariants(product.variants)
+        setImgPaths(product.imgpaths)
       }
     }
   }, [dispatch, history, productId, product, successUpdate])
 
   const submitHandler = (e) => {
     e.preventDefault()
+    // console.log(imgPaths)
     dispatch(
       updateProduct({
         _id: productId,
@@ -83,7 +86,8 @@ const EditProduct = ({ match, history }) => {
         brand,
         description,
         tags: tagsStr.split(',').map(el => el.trim()),
-        variants
+        variants,
+        imgpaths: imgPaths
       })
     )
   }
@@ -155,7 +159,10 @@ const EditProduct = ({ match, history }) => {
               Los tags funcionan como palabras claves en el buscador. En la tienda web, también se utilizarán para palablas claves en buscadores (SEO)
             </Form.Text>
           </div>
-
+          <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
+            <h4><small>Imagenes de producto</small></h4>
+            <UploadFiles imgpaths={imgPaths} setImgPaths={setImgPaths} />
+          </div>
           <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
             {
               variants.length < 1 ? <h4><small>Precio y Stock</small></h4> : <h4><small>Referencia variante, precio de variante y stock de variante</small></h4>

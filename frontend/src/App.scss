@@ -14,7 +14,7 @@ $custom-border-radius: 8px;
   }
   .product-list-grid{
     display: grid;
-    grid-template-columns: 90px 90px 3fr 3fr 2fr 90px;
+    grid-template-columns: 90px 1fr 3fr 3fr 2fr 90px;
   }
   .product-item{
     padding: .5em 0;

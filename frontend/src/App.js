@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PdfGenerator from './screens/PdfGenerator';
 import Dashboard from './screens/Dashboard';
+import UploadFiles from './screens/UploadFiles';
 
 
 function App() {
@@ -47,7 +48,7 @@ function App() {
           />
 
           <Route path='/pdf/:type/:id' component={PdfGenerator} exact />
-
+          <Route path='/files' component={UploadFiles} exact />
           <Route path="/tiendas" component={TiendasList} />
 
          {/*  <Route component={NotFoundScreen} /> */}

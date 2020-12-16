@@ -76,7 +76,7 @@ export const getOneProduct = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 export const createProduct = asyncHandler(async (req, res) => {
   const product = new Product(req.body)
-
+  product.sku = `${req.user.refid}-${product.sku}`
   try {
     const createdProduct = await product.save()
     res.status(201).json(createdProduct)
@@ -97,7 +97,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
     brand,
     description,
     variants,
-    categories
+    categories,
+    imgpaths
   } = req.body
 
   const product = await Product.findById(req.params.id)
@@ -109,7 +110,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     product.description = description
     product.variants =  variants  
     product.categories = categories
-
+    product.imgpaths = imgpaths || product.imgpaths
     const updatedProduct = await product.save()
     res.json(updatedProduct)
   } else {

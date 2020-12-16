@@ -5,6 +5,7 @@ import MainLayout from '../layouts/MainLayout'
 import { Form, Col, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import {toast} from 'react-toastify'
+import UploadFiles from './UploadFiles'
 
 const ProductHandler = () => {
   const [name, setName] = useState('')
@@ -12,7 +13,7 @@ const ProductHandler = () => {
   const [description, setDescription] = useState('')
   const [tagsStr, setTags] = useState('')
   const [sku, setSku ] = useState('')
-
+  const [imgPaths, setImgPaths] = useState(null)
   const [isVariant, setForVariant] = useState(false)
   const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
 
@@ -45,7 +46,8 @@ const ProductHandler = () => {
       brand,
       tags,
       description,
-      variants
+      variants,
+      imgpaths: imgPaths.imgpaths || ['default.jpg']
     }))
   }
 
@@ -120,6 +122,11 @@ const ProductHandler = () => {
             </Form.Text>
           </div>
 
+          <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
+            <h4><small>Imagenes de producto</small></h4>
+            <UploadFiles imgpaths={imgPaths} setImgPaths={setImgPaths} />
+          </div>
+
           <Form.Row className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
             <Col sm={12} className="mt-2">
               <Form.Group controlId="variantHandler" onChange={()=>setForVariant(!isVariant)}>
@@ -162,7 +169,7 @@ const ProductHandler = () => {
                 </div>
               :
                 <Form.Row>
-                  <Col md={7}>
+                  <Col >
                     <p className="m-0"><small>Precio de venta</small></p>
                     <Form.Control onChange={(e)=>setVariants([{...variants[0], sellPrice: e.target.value}])} value={variants[0].sellPrice} placeholder="Precio" />
                   </Col>

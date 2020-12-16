@@ -16,24 +16,24 @@ const variationSchema = mongoose.Schema({
   sold: {
       type: Number,
       default: 0
-    },
-  imgs: {
-    type: [String],
-  }
+    }
 })
 
 const productSchema  = mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: false
   },
   sku: {
     type: String,
-    required: true
+    required: true,
+    unique: false
   },
   brand: {
     type: String,
-    required: true
+    required: true,
+    unique: false
   },
   tags: {
     type: [String],
@@ -43,7 +43,13 @@ const productSchema  = mongoose.Schema({
     type: String,
     required: false
   },
-  thumbnail: [],
+  imgpaths: {
+    type: [],
+    default: [{
+      destinationPath: '/public/default.jpg',
+      srcPath: 'default.jpg'
+    }]
+  },
   variants: [variationSchema],
   store: {
     type: mongoose.Schema.Types.ObjectId,
