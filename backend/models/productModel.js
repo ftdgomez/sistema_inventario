@@ -44,11 +44,8 @@ const productSchema  = mongoose.Schema({
     required: false
   },
   imgpaths: {
-    type: [],
-    default: [{
-      destinationPath: '/public/default.jpg',
-      srcPath: 'default.jpg'
-    }]
+    type: [String],
+    default: ['/public/default.jpg']
   },
   variants: [variationSchema],
   store: {

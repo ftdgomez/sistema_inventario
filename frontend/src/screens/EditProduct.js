@@ -8,6 +8,7 @@ import Loader from '../components/Loader'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 import { toast } from 'react-toastify'
 import UploadFiles from './UploadFiles'
+import axios from 'axios'
 
 const EditProduct = ({ match, history }) => {
 
@@ -19,6 +20,8 @@ const EditProduct = ({ match, history }) => {
   const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
   const [show, setShow] = useState(false);
   const [imgPaths, setImgPaths] = useState(null)
+  const [imgCollection, setImgCollection] = useState(false)
+  
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -37,12 +40,11 @@ const EditProduct = ({ match, history }) => {
     setVariants(tempArr)
   }
 
-  const [success, setSuccess] = useState(false)
 
   const dispatch = useDispatch()
 
   const productDetails = useSelector((state) => state.productDetails)
-  const { loading, error, product } = productDetails
+  const { loading, error, product, success } = productDetails
 
   const productUpdate = useSelector((state) => state.productUpdate)
   const {
@@ -51,45 +53,82 @@ const EditProduct = ({ match, history }) => {
     success: successUpdate,
   } = productUpdate
 
-  const productDelete = useSelector(state => state.productDelete)
-
+  useEffect(()=>{
+    dispatch({ type: 'PRODUCT_DETAILS_RESET' })
+  }, [])
 
   useEffect(() => {
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET })
       history.push('/productos')
     } 
-    if (product)
+    if (JSON.stringify(product) === '{}')
     {
-      if (!product.name){
-        dispatch(listProductDetails(productId))
+      dispatch(listProductDetails(productId))
+    }
+    if (JSON.stringify(product) !== '{}' && success)
+    {
+     /*  console.log('popular...') */
+      setName(product.name)
+      setBrand(product.brand)
+      setDescription(product.description)
+      setTags(product.tags.toString())
+      setVariants(product.variants)
+      setImgPaths(product.imgpaths)
+    }
+    return function cleanup(){
+/*       console.log('unmount edit product') */
+      setImgPaths([]) 
+/*       setName('')
+      setBrand('')
+      setDescription('')
+      setTags('')
+      setVariants([])
+      setImgPaths('')
+      setImgPaths([]) 
+      dispatch({ type: PRODUCT_UPDATE_RESET })
+      
+      
+      */
+    }
+  }, [dispatch, history, product])
+
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    let xdata = {
+      _id: productId,
+      name,
+      brand,
+      description,
+      tags: tagsStr.split(',').map(el => el.trim()),
+      variants,
+    }
+    if (imgCollection)
+    {
+      
+      const formData = new FormData();
+      
+      for (const key of Object.keys(imgCollection)) {
+        formData.append('images', imgCollection[key])
       }
-      else
-      {
-        setName(product.name)
-        setBrand(product.brand)
-        setDescription(product.description)
-        setTags(product.tags.toString())
-        setVariants(product.variants)
-        setImgPaths(product.imgpaths)
+      try {
+        const {data} = await axios.post("/api/fileupload", formData, {})
+        xdata.imgpaths = data.imgpaths
+        setImgPaths(data.imgpaths)
+        dispatch(
+          updateProduct(xdata)
+        )
+      } catch (error) {
+        console.log(error)
+        toast.error('Parece que ha ocurrido un error con la subida de imagenes, por favor. Inténtalo de nuevo.')
       }
     }
-  }, [dispatch, history, productId, product, successUpdate])
-
-  const submitHandler = (e) => {
-    e.preventDefault()
-    // console.log(imgPaths)
-    dispatch(
-      updateProduct({
-        _id: productId,
-        name,
-        brand,
-        description,
-        tags: tagsStr.split(',').map(el => el.trim()),
-        variants,
-        imgpaths: imgPaths
-      })
-    )
+    else
+    {
+      dispatch(
+        updateProduct(xdata)
+      )
+    }
   }
 
   const handleDelete = async () => {
@@ -125,7 +164,7 @@ const EditProduct = ({ match, history }) => {
       <MainLayout>
         <div style={{height: '97vh', overflowY: 'auto'}} className="main-container bg-transparent">
         <div className="border-bottom d-flex align-items-center mb-4 p-4">
-          <Link to='/' className='btn btn-light border my-3'>
+          <Link to='/productos' className='btn btn-light border my-3'>
             {'<'}
           </Link>
           <header className="ml-2 pt-2">
@@ -161,7 +200,11 @@ const EditProduct = ({ match, history }) => {
           </div>
           <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
             <h4><small>Imagenes de producto</small></h4>
-            <UploadFiles imgpaths={imgPaths} setImgPaths={setImgPaths} />
+            <UploadFiles
+              imgpaths={imgPaths}
+              setImgPaths={setImgPaths}
+              setImgCollection={setImgCollection}
+            />
           </div>
           <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
             {

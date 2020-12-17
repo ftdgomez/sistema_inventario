@@ -6,19 +6,20 @@ import { Form, Col, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import {toast} from 'react-toastify'
 import UploadFiles from './UploadFiles'
+import axios from 'axios'
 
-const ProductHandler = () => {
+const ProductHandler = ({history}) => {
   const [name, setName] = useState('')
   const [brand, setBrand] = useState('')
   const [description, setDescription] = useState('')
   const [tagsStr, setTags] = useState('')
   const [sku, setSku ] = useState('')
-  const [imgPaths, setImgPaths] = useState(null)
+ 
   const [isVariant, setForVariant] = useState(false)
   const [variants, setVariants] = useState([{ref: 'main', sellPrice: '', countInStock: ''}])
-
-  const [success, setSuccess] = useState(false)
-
+  const [imgPaths, setImgPaths] = useState(null)
+  const [imgCollection, setImgCollection] = useState(false)
+ 
   const handleVariantChange = (e, index, key) => {
       let tempArr = []
       variants.forEach((el, i) => {
@@ -36,19 +37,45 @@ const ProductHandler = () => {
 
   const dispatch = useDispatch()
   const productCreate = useSelector((state) => state.productCreate )
-
-  const submitHandler = (e) => {
+ 
+  const submitHandler = async (e) => {
     e.preventDefault()
     let tags = tagsStr.split(',').map(el => el.trim())
-    dispatch(createProduct({
+    let xdata = {
       name,
       sku,
       brand,
       tags,
       description,
       variants,
-      imgpaths: imgPaths.imgpaths || ['default.jpg']
-    }))
+ 
+    }
+    if (imgCollection)
+    {
+      
+      const formData = new FormData();
+      
+      for (const key of Object.keys(imgCollection)) {
+        formData.append('images', imgCollection[key])
+      }
+      try {
+        const {data} = await axios.post("/api/fileupload", formData, {})
+        xdata.imgpaths = data.imgpaths
+        setImgPaths(data.imgpaths)
+        dispatch(
+          createProduct(xdata)
+        )
+      } catch (error) {
+        console.log(error)
+        toast.error('Parece que ha ocurrido un error con la subida de imagenes, por favor. Inténtalo de nuevo.')
+      }
+    }
+    else
+    {
+      dispatch(
+        createProduct(xdata)
+      )
+    }
   }
 
   useEffect(() => {
@@ -63,6 +90,7 @@ const ProductHandler = () => {
       setVariants([{ref: 'main', sellPrice: '', countInStock: ''}])
       toast.success('Maravilloso! el producto ha sido creado con éxito.')
       dispatch({ type: 'PRODUCT_CREATE_RESET' })
+      history.go(0)
     }
     if (productCreate.error)
     {
@@ -124,7 +152,11 @@ const ProductHandler = () => {
 
           <div className="p-4 border rounded-xl mb-4 bg-white shadow-sm">
             <h4><small>Imagenes de producto</small></h4>
-            <UploadFiles imgpaths={imgPaths} setImgPaths={setImgPaths} />
+            <UploadFiles
+              imgpaths={imgPaths}
+              setImgPaths={setImgPaths}
+              setImgCollection={setImgCollection}
+            />
           </div>
 
           <Form.Row className="p-4 border rounded-xl mb-4 bg-white shadow-sm">

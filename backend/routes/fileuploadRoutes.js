@@ -1,19 +1,19 @@
 import express from 'express'
 import path from 'path'
 import multer from 'multer'
-import imagemin from 'imagemin'
-import imageminWebp from 'imagemin-webp'
-import { execSync } from 'child_process'
+import sharp from 'sharp'
+import {nanoid} from 'nanoid'
 
 const router = express.Router()
-const storage = multer.diskStorage({
+/* const storage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, 'tempuploads/')
   },
   filename(req,file,cb){
     cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
   }
-})
+}) */
+const storage = multer.memoryStorage() // <- para poder usar sharp sin tener que reabrir la imagen
 
 function checkFileType(file, cb) {
   const filetypes = /jpg|jpeg|png/
@@ -39,19 +39,21 @@ const upload = multer({
 
 router.post('/', upload.array('images', 5), async (req, res) => {
   try {
-    const files = await imagemin(["tempuploads/*.{jpg,png,jpeg}"], {
-      destination: 'public/compressed',
-      plugins: [
-        imageminWebp({ quality: 50 })
-      ]
-    })
-    console.log(files)
-    // execSync(`mv ${process.cwd()}/tempuploads/* ${process.cwd()}/public/uncompressed`)
-    execSync(`rm -rf ${process.cwd()}/tempuploads/*`)
-    res.json({imgpaths: files.map(f => ({destinationPath: f.destinationPath, srcPath: f.destinationPath.substring(6)}) )});
+    const filepaths = []
+    for (let i = 0; i < req.files.length; i++) {
+      const picture = req.files[i];
+      const picname = `pic-${nanoid(5)}-${nanoid(2)}.webp`
+      await sharp(picture.buffer)
+                                .resize(800,800, { fit: 'inside'})
+                                .toFile(`${process.cwd()}/public/img/${picname}`)
+
+      filepaths.push(`/public/img/${picname}`)
+    }
+
+    res.status(201).json({imgpaths: filepaths})
   } catch (error) {
     console.log(error);
-    res.send(400);
+    res.status(400).json({error: 'Error al subir el archivo.'});
   }
 })
 

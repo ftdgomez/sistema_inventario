@@ -34,7 +34,7 @@ const ProductList = ({products, user}) => {
           <div className="product-item product-list-grid">
 {/*             <img src={product.imgpaths[0].srcPath} alt="" style={{}} />
  */}
-             <div style={{backgroundImage: `url(${product.imgpaths[0].destinationPath})`, backgroundSize: 'cover',
+             <div style={{backgroundImage: `url(${product.imgpaths[0]})`, backgroundSize: 'cover',
           backgroundPosition: 'center', height: '50px', width: '50px'}}></div>
             <span>{product.sku}</span>
             <span><Link to={`/product/${product._id}`}>{product.name}</Link></span>

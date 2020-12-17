@@ -258,3 +258,39 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     padding: 100px 0;
   }
 }
+
+
+.form-group.preview{
+  border: 1px solid #e1e1e1;
+  transition: .4s ease;
+  display: grid;
+  gap: 1em;
+  padding: 1em;
+  .img-cont-prev{
+    margin: auto;
+    border: 1px solid #e1e1e1;
+    position: relative;
+    &:hover{
+      .delete{
+        display: block;
+      }
+    }
+    .delete{
+      background-color: $danger;
+      color: white;
+      display: inline-block;
+      align-items: center;
+      width: 2em;
+      height: 2em;
+      text-align: center;
+      border-radius: 3px;
+      position: absolute;
+      padding: 4px;
+      top: 0;
+      right: 0;
+      margin: 4px;
+      display: none;
+    }
+  }
+
+}

@@ -91,16 +91,18 @@ export const productDeleteReducer = (state = { product: {} }, action) => {
 }
 
 export const productDetailsReducer = (
-  state = { product: { reviews: [] } },
+  state = { product: { } },
   action
 ) => {
   switch (action.type) {
     case PRODUCT_DETAILS_REQUEST:
       return { ...state, loading: true }
     case PRODUCT_DETAILS_SUCCESS:
-      return { loading: false, product: action.payload }
+      return { loading: false, product: action.payload, success: true }
     case PRODUCT_DETAILS_FAIL:
       return { loading: false, error: action.payload }
+    case 'PRODUCT_DETAILS_RESET':
+      return {product: {}}
     default:
       return state
   }
