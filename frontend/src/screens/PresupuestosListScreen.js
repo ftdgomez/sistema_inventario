@@ -5,10 +5,60 @@ import { listPresupuestos, deletePresupuesto } from '../actions/presupuestoActio
 import { listInvoices, deleteInvoice } from '../actions/invoiceActions'
 import InlineLoader from '../components/InlineLoader'
 import Paginate from '../components/Paginate'
-import { Form, Button, Table, ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap'
+import { Form, Button, Modal, ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { PRESUPUESTO_LIST_RESET } from '../constants/presupuetoConstants'
 import { INVOICE_LIST_RESET } from '../constants/invoiceConstants'
+
+const OptionsModal = ({show, setShow, link}) => {
+
+  const handleClose = () => {
+    setShow(false);
+    setCodigoArea(58)
+    setMsg('')
+    setPhone('')
+  }  
+
+  const [codigoArea, setCodigoArea] = useState(58)
+  const [msg, setMsg] = useState('')
+  const [phone, setPhone] = useState('')
+
+  return (
+    <>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Enviar Mensaje Personalizado</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+
+            <div>
+              <label>Código de área:</label>
+              <input type="number" className="form-control" value={codigoArea} onChange={(e)=>setCodigoArea(e.target.value)} />
+            </div>
+            <div className="mb-2">
+              <label>Número</label>
+              <input type="text" className="form-control" value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="4241231212" />
+            </div>
+            <label>Mensaje</label>
+            <textarea type="text" className="form-control" value={msg} onChange={(e)=>setMsg(e.target.value)} placeholder="Su mensaje"></textarea>
+            <p className="px-4"><small>Al final de su mensaje, se anexará "<i>El link de presupuesto/nota de entrega -{'>'} http://...</i>"</small></p>
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Atrás
+          </Button>
+          <Button disabled={!(codigoArea && msg !== '' && phone !== '')} as="a" href={`https://wa.me/${codigoArea}${phone}?text=${encodeURI(msg)}${encodeURI(` || ${link}`)}`} target="_blank" variant="primary">Enviar</Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+}
 
 const PresupuestosListScreen = ({ history, match }) => {
   const keyword = match.params.keyword
@@ -22,7 +72,8 @@ const PresupuestosListScreen = ({ history, match }) => {
   const { loading, error, success, page, pages, invoices, presupuestos } = dataOrigin
 
   const dataDeleted = useSelector(state => match.params.type === 'presupuestos' ? state.presupuestoDelete : state.invoiceDelet)
-
+  const [show, setShow] = useState(false);
+  const [pid, setPid] = useState('')
   useEffect(() => {
     if (!userInfo || !userInfo.isStore) {
       history.push('/login')
@@ -68,6 +119,10 @@ const PresupuestosListScreen = ({ history, match }) => {
     }
   }
 
+  const handleShow = (pid) => {
+    setPid(pid)
+    setShow(!show)
+  }
 
   return (
     <MainLayout>
@@ -88,44 +143,53 @@ const PresupuestosListScreen = ({ history, match }) => {
             (presupuestos || invoices) ?
             <div className="pt-2 border rounded-xl main-container">
             <div className="m-4">
-              <Table striped bordered hover size="sm" responsive>
-                <thead>
-                  <tr>
-                    <th>#Ref</th>
-                    <th>cliente</th>
-                    <th>Estado</th>
-                    <th>Total {match.params.type === 'presupuestos' ? 'Presupuestado' : 'Vendido' }</th>
-                    { userInfo && <>{userInfo.isAdmin && <th>Tienda:</th>}</>}
-                    <th>Controles</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {dataOrigin[match.params.type].map((p, index) => (
-                        <tr key={p._id}>
-                          <td>{p.refid}</td>
-                          <td>{p.cliente.name}</td>
-                          <td>{p.state}</td>
-                          <td>$ {p.total}</td>
-                          {userInfo && <>{userInfo.isAdmin && <td>{p.store.name}</td>}</>}
-                          <td>
-                          <ButtonGroup>
-                            <Link to={`/edit/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}`} className="btn btn-primary">Editar</Link>
-                            <a className="btn btn-primary" target="_blank" href={`/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`}>Ver / Descargar</a>
-                            <DropdownButton as={ButtonGroup} title="Enviar" id="bg-nested-dropdown">
-                              <Dropdown.Item href={`mailto:${p.cliente.email}?subject=${encodeURI(`Su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'}`)}&body=${encodeURI(`Gracias por user nuestros servicios! puede encontrar su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'} en el siguiente link https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`)}`} eventKey="1">
-                                Enviar por correo
-                              </Dropdown.Item>
-                              <Dropdown.Item href={`https://wa.me/58${p.cliente.phone}?text=${encodeURI(`Gracias por user nuestros servicios! puede encontrar su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'} en el siguiente link https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`)}`} eventKey="2">
-                                Enviar por whatsapp
-                              </Dropdown.Item>
-                            </DropdownButton>
-                            <Button variant="danger" onClick={(e) => handleDelete(e, p._id)}>Eliminar</Button>
-                          </ButtonGroup>
-                          </td>
-                        </tr>
-                    ))}
-              </tbody>
-              </Table>
+              <div className="presupuesto-list-container">
+                  <header>
+                    <div>#Ref</div>
+                    <div>cliente</div>
+                    <div>Estado</div>
+                    <div>Total {match.params.type === 'presupuestos' ? 'Presupuestado' : 'Vendido' }</div>
+                    { userInfo && <>{userInfo.isAdmin && <div>Tienda:</div>}</>}
+                    <div>Controles</div>
+                  </header>
+                  <section>
+                      {dataOrigin[match.params.type].map((p, index) => (
+                          <article key={p._id}>
+                            <div>{p.refid}</div>
+                            <div>{p.cliente.name}</div>
+                            <div>{p.state}</div>
+                            <div>$ {p.total}</div>
+                            {userInfo && <>{userInfo.isAdmin && <div>{p.store.name}</div>}</>}
+                            <div>
+                            <ButtonGroup>
+                              <Link to={`/edit/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}`} className="btn btn-primary">Editar</Link>
+                              <a className="btn btn-primary" target="_blank" href={`/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`}>Ver / Descargar</a>
+                              <DropdownButton as={ButtonGroup} title="Enviar" id="bg-nested-dropdown" style={{position: 'relative'}}>
+                                <Dropdown.Item href={`mailto:${p.cliente.email}?subject=${encodeURI(`Su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'}`)}&body=${encodeURI(`Gracias por user nuestros servicios! puede encontrar su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'} en el siguiente link https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`)}`} eventKey="1">
+                                  <span className="btn btn-primary">Enviar por correo a cliente</span>
+                                </Dropdown.Item>
+                                <Dropdown.Item href={`https://wa.me/58${p.cliente.phone}?text=${encodeURI(`Gracias por user nuestros servicios! puede encontrar su ${match.params.type === 'presupuesto' ? 'presupuesto' : 'nota de entrega'} en el siguiente link https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${p._id}/`)}`} eventKey="2">
+                                  <span className="btn btn-primary">Enviar por whatsapp a cliente</span>
+                                </Dropdown.Item>
+                                <Dropdown.Item as="div">
+                                  <Button variant="primary" onClick={()=>handleShow(p._id)}>
+                                      Enviar por whatsapp personalizado
+                                  </Button>
+                                </Dropdown.Item>
+                   {/*              <Dropdown.Item as="div">
+                                  <Button variant="primary" onClick={()=>handleCopy(p._id)}>
+                                      Copiar link para compartir
+                                  </Button>
+                                </Dropdown.Item> */}
+                              </DropdownButton>
+                              <Button variant="danger" onClick={(e) => handleDelete(e, p._id)}>Eliminar</Button>
+                            </ButtonGroup>
+                            </div>
+                          </article>
+                      ))}
+                  </section>
+              </div>
+
               {dataOrigin[match.params.type].length < 1 && <p>Parace que no se han creado {match.params.type} en esta tienda.</p>}
             </div>
             <div className="paginate-container">
@@ -147,9 +211,10 @@ const PresupuestosListScreen = ({ history, match }) => {
             
           </p>
           }
-
         </div>
     }
+      <OptionsModal show={show} setShow={setShow} 
+      link={`El link de presupuesto -> https://${window.location.hostname}/pdf/${match.params.type === 'presupuestos' ? 'presupuesto' : 'invoice'}/${pid}/`}  />
     </MainLayout>
   )
 }

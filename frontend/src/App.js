@@ -14,6 +14,7 @@ import PdfGenerator from './screens/PdfGenerator';
 import Dashboard from './screens/Dashboard';
 import UploadFiles from './screens/UploadFiles';
 import Logout from './screens/Logout';
+import RegisterScreen from './screens/RegisterScreen';
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
           <Route path='/files' component={UploadFiles} exact />
           <Route path="/tiendas" component={TiendasList} />
           <Route path="/logout" component={Logout} />
+          <Route path="/register/:apikey" component={RegisterScreen} />
          {/*  <Route component={NotFoundScreen} /> */}
       </main>
       <ToastContainer />

@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 import User from '../models/userModel.js'
+import ApiCode from '../models/apicodeModel.js'
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -29,33 +30,59 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body
-
-  const userExists = await User.findOne({ email })
-
-  if (userExists) {
-    res.status(400)
-    throw new Error('User already exists')
+  const { name, email, password, address, phone, apikey } = req.body
+  console.log(req.body)
+  // check the api code
+  const apik = await ApiCode.findOne({apicode: apikey})
+  if (!apik && apik.used)
+  {
+    res.status(401)
+    throw new Error('Prohibido.')
   }
-
-  const user = await User.create({
-    name,
-    email,
-    password,
-  })
-
-  if (user) {
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      isStore: user.isStore,
-      token: generateToken(user._id),
+  else
+  {
+    const userExists = await User.findOne({ email })
+  
+    if (userExists) {
+      res.status(400)
+      throw new Error('No puedes utilizar ese mail.')
+    }
+    let refid = name.split(' ')[1].toString().replace(/,/g,'').slice(0,3)
+/* 
+    console.log(refid)
+     */
+    const user = await User.create({
+      name,
+      email,
+      password,
+      address,
+      contactPhone: phone,
+      refid,
+      isAdmin: apik.isAdmin,
+      isStore: true,
+      contactMail: email,
+      hours: [
+        'Lunes a vier: de 8:30 a.m. a 5:30 p.m',
+        'Sábados: 9:00 a.m. a 3:00 p.m.',
+        'Domingos: cerrado'
+      ]
     })
-  } else {
-    res.status(400)
-    throw new Error('Invalid user data')
+  
+    if (user) {
+      apik.used = true;
+      await apik.save()
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        isStore: user.isStore,
+        token: generateToken(user._id),
+      })
+    } else {
+      res.status(400)
+      throw new Error('Invalid user data')
+    }
   }
 })
 
