@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 import User from '../models/userModel.js'
 import ApiCode from '../models/apicodeModel.js'
+import { nanoid } from 'nanoid'
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -47,7 +48,16 @@ const registerUser = asyncHandler(async (req, res) => {
       res.status(400)
       throw new Error('No puedes utilizar ese mail.')
     }
-    let refid = name.split(' ')[1].toString().replace(/,/g,'').slice(0,3)
+    // comprobar que el nombre tenga al menos dos palabras
+    let refid = name.split(' ')
+    if (refid[1])
+    {
+      refid = name.split(' ')[1].toString().replace(/,/g,'').slice(0,3)
+    }
+    else
+    {
+      refid = nanoid(3)
+    }
 /* 
     console.log(refid)
      */
@@ -65,7 +75,8 @@ const registerUser = asyncHandler(async (req, res) => {
         'Lunes a vier: de 8:30 a.m. a 5:30 p.m',
         'Sábados: 9:00 a.m. a 3:00 p.m.',
         'Domingos: cerrado'
-      ]
+      ],
+      apikey
     })
   
     if (user) {

@@ -49,7 +49,7 @@ const ProductList = ({products, user}) => {
             </Accordion.Toggle> */}
           </div>
           <div className="px-4 py-2">
-            {product.variants.filter(i => i.countInStock < 10).map((el,i,arr )=> <p key={el._id} className="text-danger m-0"><small>{arr.length > 1 ? `Variante "${el.ref}"` : ''} queda poco stock: {el.countInStock}</small></p>)}
+            {product.variants.filter(i => i.countInStock < 10).map((el,i,arr )=> <p key={el._id} className="text-danger m-0"><small className="text-danger">{arr.length > 1 ? `Variante "${el.ref}"` : ''} Queda poco stock: <span className="font-weight-bold text-danger">{el.countInStock}</span></small></p>)}
           </div>
           {
             (user.isAdmin && product.store) && <p className="border"><small>Disponible en {product.store.name}</small></p>

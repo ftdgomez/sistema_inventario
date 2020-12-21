@@ -51,7 +51,7 @@ const HomeScreen = ({ history, match }) => {
         <MainLayout>
           <Searchbar history={history} keyword={keyWord} params={queriesParams} />
           <div className="pt-2 border rounded-xl main-container">
-            <ProductList products={products} user={userInfo} />
+            {products ? <ProductList products={products} user={userInfo} /> : <p>No hay productos para mostrar aquí.</p>}
             <div className="paginate-container">
               <Paginate
                 pages={pages}

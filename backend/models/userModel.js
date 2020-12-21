@@ -51,6 +51,10 @@ const userSchema = mongoose.Schema(
     },
     hours: {
       type: [String]
+    },
+    apikey: {
+      type: String,
+      required: false
     }
   },
   {
