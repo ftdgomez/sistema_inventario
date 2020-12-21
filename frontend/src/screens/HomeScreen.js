@@ -40,6 +40,12 @@ const HomeScreen = ({ history, match }) => {
     setParams(finalobj)
   }, [dispatch, keyWord, pageNumber, userInfo])
 
+  useEffect(()=>{
+    if (error === 'Request failed with status code 401')
+    {
+      history.push('/logout')
+    }
+  }, [error])
 
   if (loading)
   {
@@ -51,7 +57,7 @@ const HomeScreen = ({ history, match }) => {
         <MainLayout>
           <Searchbar history={history} keyword={keyWord} params={queriesParams} />
           <div className="pt-2 border rounded-xl main-container">
-            {products ? <ProductList products={products} user={userInfo} /> : <p>No hay productos para mostrar aquí.</p>}
+            {products ? <ProductList products={products} user={userInfo} /> : <p className="p-4">No hay productos para mostrar aquí.</p>}
             <div className="paginate-container">
               <Paginate
                 pages={pages}

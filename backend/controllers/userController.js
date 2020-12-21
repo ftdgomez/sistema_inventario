@@ -35,7 +35,7 @@ const registerUser = asyncHandler(async (req, res) => {
   console.log(req.body)
   // check the api code
   const apik = await ApiCode.findOne({apicode: apikey})
-  if (!apik && apik.used)
+  if (!apik || apik.used)
   {
     res.status(401)
     throw new Error('Prohibido.')
