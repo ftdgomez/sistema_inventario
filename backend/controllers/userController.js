@@ -52,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
     let refid = name.split(' ')
     if (refid[1])
     {
-      refid = name.split(' ')[1].toString().replace(/,/g,'').slice(0,3)
+      refid = name.split(' ')[1].toString().toLowerCase().replace(/,/g,'').slice(0,3)
     }
     else
     {
@@ -61,38 +61,41 @@ const registerUser = asyncHandler(async (req, res) => {
 /* 
     console.log(refid)
      */
-    const user = await User.create({
-      name,
-      email,
-      password,
-      address,
-      contactPhone: phone,
-      refid,
-      isAdmin: apik.isAdmin,
-      isStore: true,
-      contactMail: email,
-      hours: [
-        'Lunes a vier: de 8:30 a.m. a 5:30 p.m',
-        'Sábados: 9:00 a.m. a 3:00 p.m.',
-        'Domingos: cerrado'
-      ],
-      apikey
-    })
-  
-    if (user) {
-      apik.used = true;
-      await apik.save()
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        isStore: user.isStore,
-        token: generateToken(user._id),
+    try {
+      const user = await User.create({
+        name,
+        email,
+        password,
+        address,
+        contactPhone: phone,
+        refid,
+        isAdmin: apik.isAdmin,
+        isStore: true,
+        contactMail: email,
+        hours: [
+          'Lunes a vier: de 8:30 a.m. a 5:30 p.m',
+          'Sábados: 9:00 a.m. a 3:00 p.m.',
+          'Domingos: cerrado'
+        ],
+        apikey
       })
-    } else {
-      res.status(400)
-      throw new Error('Invalid user data')
+      if (user) {
+        apik.used = true;
+        await apik.save()
+        res.status(201).json({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+          isStore: user.isStore,
+          token: generateToken(user._id),
+        })
+      } else {
+        res.status(400)
+        throw new Error('Invalid user data')
+      }
+    } catch (error) {
+      res.status(400).json(error.message)
     }
   }
 })

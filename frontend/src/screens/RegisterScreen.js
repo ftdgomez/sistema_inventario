@@ -25,7 +25,11 @@ const RegisterScreen = ({ location, history, match }) => {
     if (userInfo) {
       history.push(redirect)
     }
-  }, [history, userInfo, redirect])
+    if (error)
+    {
+      toast.error(error)
+    }
+  }, [history, userInfo, redirect, error])
 
   const submitHandler = (e) => {
     e.preventDefault()
