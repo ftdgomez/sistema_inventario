@@ -42,22 +42,22 @@ const registerUser = asyncHandler(async (req, res) => {
   }
   else
   {
-    const userExists = await User.findOne({ email })
+    const userExists = await User.findOne({ email: email.toLowerCase() })
   
     if (userExists) {
       res.status(400)
       throw new Error('No puedes utilizar ese mail.')
     }
     // comprobar que el nombre tenga al menos dos palabras
-    let refid = name.split(' ')
+    /* let refid = name.split(' ')
     if (refid[1])
     {
       refid = name.split(' ')[1].toString().toLowerCase().replace(/,/g,'').slice(0,3)
     }
     else
     {
-      refid = nanoid(3)
-    }
+    } */
+    refid = nanoid(3)
 /* 
     console.log(refid)
      */
