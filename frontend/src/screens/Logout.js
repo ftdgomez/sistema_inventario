@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../actions/userActions'
 
 const Logout = ({ location, history }) => {
   const dispatch = useDispatch()
@@ -11,7 +12,7 @@ const Logout = ({ location, history }) => {
   useEffect(() => {
     if (userInfo) {
       history.push(redirect)
-      dispatch({ type: 'USER_LOGOUT' })
+      dispatch(logout())
     }
   }, [history, userInfo, redirect])
 
