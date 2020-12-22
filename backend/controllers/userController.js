@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid'
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
-  const user = await User.findOne({ email })
+  const user = await User.findOne({ email: email.toLowerCase() })
 
   if (user && (await user.matchPassword(password))) {
     res.json({
